@@ -8,7 +8,7 @@ from config import Config
 from lib import AsyncDaoModel, DaoModel
 from connect import connect_db, redis_cluster, asyncio_mongo
 
-__models__ = []
+__models__ = ['ReferralModel', 'ReferralLogModel', 'LeaderBoardModel']
 
 ReferralModel = DaoModel(connect_db.db.referral, redis=redis_cluster, broker=Config.BROKER_URL,
                           project=Config.PROJECT)

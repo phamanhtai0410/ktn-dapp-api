@@ -11,6 +11,6 @@ class ReferralLogResponseSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    public_address = fields.String(default='', missing='')
-    public_address_linked = fields.String(default='', missing='')
+    address = fields.String(default='', missing='')
+    address_linked = fields.String(default='', missing='')
     code_linked = fields.String(default='', missing='')

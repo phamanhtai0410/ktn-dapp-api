@@ -12,7 +12,7 @@ class LeaderBoardItem(Schema):
         unknown = EXCLUDE
         ordered = True
 
-    public_address = fields.String()
+    address = fields.String()
     total_user_linked = fields.Int()
 
 class LeaderBoardResponse(Schema):

@@ -14,7 +14,7 @@ class LeaderBoardHelper:
         if search:
             _filter = {
                 **_filter,
-                'public_address': search
+                'address': search
             }
 
         # get leader board and sort with total user input code descending

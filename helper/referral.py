@@ -2,11 +2,18 @@ import string
 import random
 
 from constants import Constants
+from helper.wallet import WalletHelper
 from lib.exception import BadRequest
 from lib.utils import dt_utcnow
 from models import LeaderBoardModel, ReferralLogModel, ReferralModel
 from schemas.referral import ReferralResponseSchema
 import pydash as py_
+
+from eth_account.messages import defunct_hash_message
+from web3 import Web3
+
+
+web3 = Web3()
 
 class ReferralHelper:
 
@@ -26,46 +33,41 @@ class ReferralHelper:
                 return ref_code 
     
     @staticmethod
-    def get_referral_code(public_address):
-        if not public_address:
-            raise BadRequest('public_address can not null')
-        
+    def get_referral_code(address):
+        if not address:
+            raise BadRequest('address can not null')
+
+        _address = address.lower()
+
         _referral = ReferralModel.find_one({
-            'public_address': public_address
+            'address': _address
         })
+
+        if not _referral:
+            raise BadRequest('referral not found')
 
         _user_leader_board = LeaderBoardModel.find_one({
-            'public_address': public_address,
+            'address': _address,
             'event': Constants.TOP_REFERRAL_EVENT_NAME
-        })
-
-        if _referral:
-            return {
-                **_referral,
-                'total_user_linked': py_.get(_user_leader_board, 'total_user_linked', 0)
-            }
-
-        # TODO: check rules generate ref code if needed later
-
-        _referral = ReferralModel.insert_one({
-            'public_address': public_address,
-            'code': ReferralHelper.generate_referral_code(code_length=Constants.REFERRAL_CODE_LENGTH),
-            'created_by': 'api'
         })
 
         return {
             **_referral,
-            'total_user_linked': 0
+            'total_user_linked': py_.get(_user_leader_board, 'total_user_linked', 0)
         }
 
     @staticmethod
-    def input_referral_code(public_address, ref_code):
-        if not public_address:
-            raise BadRequest('public_address can not null')
+    def input_referral_code(address, sign_message, signature, ref_code):
+        _address = WalletHelper.get_address_of(signature=signature, msg=sign_message)
+
+        if not _address or address.lower() != _address:
+            raise BadRequest(msg="Invalid", errors=[{
+                'signature': 'Invalid'
+            }])
 
         # check if user had been linked code
         _referral_log = ReferralLogModel.find({
-            'public_address': public_address
+            'address': _address
         })
         
         if _referral_log:
@@ -78,14 +80,14 @@ class ReferralHelper:
         if not _referral:
             raise BadRequest('referral code not found')
         
-        _public_address_linked = py_.get(_referral, 'public_address')
+        _address_linked = py_.get(_referral, 'address')
 
         # user can not input user's own code
-        if public_address == _public_address_linked:
+        if _address == _address_linked:
             raise BadRequest("user can not input user's own code")
 
         LeaderBoardModel.col.find_one_and_update({
-            'public_address': _public_address_linked,
+            'address': _address_linked,
             'event': Constants.TOP_REFERRAL_EVENT_NAME,
             'updated_by': 'api',
             'updated_time': dt_utcnow()
@@ -97,8 +99,8 @@ class ReferralHelper:
 
 
         _referral_log = ReferralLogModel.insert_one({
-            'public_address': public_address,
-            'public_address_linked': _public_address_linked,
+            'address': _address,
+            'address_linked': _address_linked,
             'code_linked': ref_code,
             'created_by': 'api'
         })
