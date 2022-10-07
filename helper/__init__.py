@@ -6,3 +6,4 @@
 """
 
 from .referral import ReferralHelper
+from .user import UserHelper
