@@ -117,6 +117,7 @@ deploy_worker_stag:
         sed -i -e "s#\[FULLREPO_ASIA\]#$FULLREPO_ASIA_STAG#g" worker-stag.yaml
         sed -i -e "s#\[NAMESPACE\]#$NAMESPACE_STAG#g" worker-stag.yaml
       fi
+    - cat skaffold.yaml 
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
     - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
     - /usr/local/bin/skaffold deploy -p profile-worker-stag   -a build.json
