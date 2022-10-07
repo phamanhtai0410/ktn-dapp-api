@@ -32,11 +32,11 @@ class ReferralResource(Resource):
     def post(self, form_data):
         _code = py_.get(form_data, 'code')
         _address = py_.get(form_data, 'address')
-        _sign_message = py_.get(form_data, 'sign_message')
+        _nonce = py_.get(form_data, 'nonce')
         _signature = py_.get(form_data, 'signature')
         _referral = ReferralHelper.input_referral_code(
             address=_address, 
             ref_code=_code,
-            sign_message=_sign_message,
-            signature=_signature)
+            signature=_signature,
+            nonce=_nonce)
         return _referral

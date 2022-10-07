@@ -4,10 +4,12 @@
         -
         -
 """
+from flask import request
 from flask_restful import Resource
 
 from schemas.hello import HelloSchema
 from connect import security
+from tasks.referral import task_generate_referral_code
 
 
 class HelloWorld(Resource):
@@ -16,7 +18,7 @@ class HelloWorld(Resource):
         # login_required=True
     )
     def get(self):
-        
+        task_generate_referral_code.delay(address=request.args.get('address'))
         return {'hello': 'world'}
 
     @security.http(

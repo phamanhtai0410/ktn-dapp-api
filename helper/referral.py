@@ -39,9 +39,9 @@ class ReferralHelper:
 
         _address = address.lower()
 
-        _referral = ReferralModel.find_one({
+        _referral = ReferralModel.find_one_with_cache({
             'address': _address
-        })
+        }, query=None)
 
         if not _referral:
             raise BadRequest('referral not found')
@@ -57,8 +57,24 @@ class ReferralHelper:
         }
 
     @staticmethod
-    def input_referral_code(address, sign_message, signature, ref_code):
-        _address = WalletHelper.get_address_of(signature=signature, msg=sign_message)
+    def get_referral_sign_message(address, ref_code):
+        _address = address.lower()
+        _msg, _nonce = WalletHelper.get_referral_sign_msg(address=_address, ref_code=ref_code)
+        return {
+            'code': ref_code,
+            'msg': _msg,
+            'nonce': _nonce
+        }
+
+    @staticmethod
+    def input_referral_code(address, signature, ref_code, nonce):
+        _now = dt_utcnow().timestamp()
+        if _now - nonce > Constants.EXPIRE_REFERRAL_NONCE:
+            raise BadRequest(msg="Invalid", errors=[{
+                'nonce': "Invalid"
+            }])
+        _sign_msg = WalletHelper._get_referral_sign_msg(address=address.lower(), ref_code=ref_code, nonce=nonce)
+        _address = WalletHelper.get_address_of(signature=signature, msg=_sign_msg)
 
         if not _address or address.lower() != _address:
             raise BadRequest(msg="Invalid", errors=[{
@@ -73,9 +89,9 @@ class ReferralHelper:
         if _referral_log:
             raise BadRequest('user has been linked with another code')
 
-        _referral = ReferralModel.find_one({
+        _referral = ReferralModel.find_one_with_cache({
             'code': ref_code
-        })
+        }, query=None)
 
         if not _referral:
             raise BadRequest('referral code not found')
@@ -88,12 +104,14 @@ class ReferralHelper:
 
         LeaderBoardModel.col.find_one_and_update({
             'address': _address_linked,
-            'event': Constants.TOP_REFERRAL_EVENT_NAME,
-            'updated_by': 'api',
-            'updated_time': dt_utcnow()
+            'event': Constants.TOP_REFERRAL_EVENT_NAME
         }, {
             '$inc': {
                 'total_user_linked': 1
+            },
+            '$set': {
+                'updated_by': 'api',
+                'updated_time': dt_utcnow()
             }
         }, upsert=True)
 

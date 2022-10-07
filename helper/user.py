@@ -5,49 +5,60 @@ from lib.utils import util_web3, dt_utcnow
 from email import message
 from operator import truediv
 from models import UserModel
-import tasks
+from tasks import referral
+from .wallet import WalletHelper
 
 
 class UserHelper:
+    
+    @staticmethod
+    def validate_nonce(_nonce):
+        _dt = dt_utcnow().timestamp() - _nonce
+        if 10000 >= _dt >= 0:
+            return True
+
+        return False
+
     
     @staticmethod
     def get_sign_message(address):
         if not address:
             raise BadRequest('address can not null')
         _address =  address.lower()
-        _nonce = dt_utcnow().timestamp()
-        _message = f'I\'m signing to KatanaInu using nonce {_nonce} at address {_address}'
+        _message,_nonce = WalletHelper.get_sign_msg(_address)
         return {"message":_message,
-                "address": _address}
+                "address": _address,
+                "nonce":_nonce}
     
-    @staticmethod
-    def verify_signature(address,message,signature):
+    @classmethod
+    def verify_signature(cls, address,nonce,signature):
         if not address:
             raise BadRequest('address can not null')
-        if not message:
-            raise BadRequest('message can not null')
+        if not nonce:
+            raise BadRequest('nonce can not null')
         if not signature:
             raise BadRequest('signature can not null')
+        
+        check = cls.validate_nonce(nonce)
+        if check ==False: 
+            raise BadRequest('nonce is invalid')
         _address = address.lower()
-        _msg_hash = defunct_hash_message(text=message)
-        _signer = util_web3.eth.account.recoverHash(
-            _msg_hash,
-            signature=signature
-        )
-        if _address == _signer.lower() :
+        _message = WalletHelper._get_sign_msg(_address, nonce)
+        _signer = WalletHelper.get_address_of(signature,_message)
+        if _address == _signer:
             _user = UserModel.find_one(
                 filter={
-                    'address': address.lower()
+                    'address': _address
                 }
             )
             if not _user:
-                tasks.task_generate_referral_code(_address)
+                referral.task_generate_referral_code.delay(address = _address)
                 UserModel.insert_one({
                     'address': _address,
                     'created_by': 'thanh'
                 })
                 
-            return {"message":"Valid!",
+            return {"result":"Valid!",
                     "address": _address}
-        return {"message":"Invalid!"}
+        return {"result":"Invalid!"}
         
