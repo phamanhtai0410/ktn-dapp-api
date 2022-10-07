@@ -24,7 +24,7 @@ class ReferralInputSchema(Schema):
 
     code = fields.String(required=True)
     address = fields.String(required=True)
-    sign_message = fields.String(required=True)
+    nonce = fields.Int(required=True)
     signature = fields.String(required=True)
 
 class ReferralRequestParams(Schema):

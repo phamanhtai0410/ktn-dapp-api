@@ -34,6 +34,11 @@ class WalletHelper:
     def _get_sign_msg(address, nonce):
         return f"I'm signing to KatanaInu using nonce {nonce} at address {address}"
 
+    @staticmethod
+    def _get_referral_sign_msg(address, nonce, ref_code):
+        return f"I input referral code to KatanaInu with code {ref_code} and nonce {nonce} at address {address}"
+        
+
     @classmethod
     def get_sign_msg(cls, address):
         _nonce = cls.get_nonce()
@@ -42,4 +47,9 @@ class WalletHelper:
     @staticmethod
     def get_nonce():
         return int(dt_utcnow().timestamp())
+
+    @classmethod
+    def get_referral_sign_msg(cls, address, ref_code):
+        _nonce = cls.get_nonce()
+        return cls._get_referral_sign_msg(address=address, nonce=_nonce, ref_code=ref_code), _nonce
         

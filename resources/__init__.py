@@ -10,12 +10,14 @@ from resources.iapi import iapi_resources
 from resources.referral import ReferralResource
 from resources.leader_board import LeaderBoardResource
 from resources.user import User
+from resources.referral_sign_message import ReferralSignMessageResource
 
 api_resources = {
     '/hello': HelloWorld,
     '/common/health_check': HealthCheck,
     **{f'/iapi{k}': val for k, val in iapi_resources.items()},
     '/referral': ReferralResource,
+    '/referral/validate': ReferralSignMessageResource,
     '/leader_board': LeaderBoardResource,
     '/user': User
 }
