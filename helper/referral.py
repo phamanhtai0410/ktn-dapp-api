@@ -104,12 +104,14 @@ class ReferralHelper:
 
         LeaderBoardModel.col.find_one_and_update({
             'address': _address_linked,
-            'event': Constants.TOP_REFERRAL_EVENT_NAME,
-            'updated_by': 'api',
-            'updated_time': dt_utcnow()
+            'event': Constants.TOP_REFERRAL_EVENT_NAME
         }, {
             '$inc': {
                 'total_user_linked': 1
+            },
+            '$set': {
+                'updated_by': 'api',
+                'updated_time': dt_utcnow()
             }
         }, upsert=True)
 
