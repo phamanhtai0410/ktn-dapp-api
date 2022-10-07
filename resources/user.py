@@ -13,7 +13,7 @@ import pydash as py_
 from connect import security
 
 
-from schemas.user import UserRequestParams, UserResponseSchema, UserInputSchema
+from schemas.user import UserRequestParams, UserResponseSchema, UserInputSchema, UserResponseLogSchema
 from helper import UserHelper
 
 
@@ -29,13 +29,13 @@ class User(Resource):
         return message
     
     @security.http(
-        params=UserInputSchema(),
-        response=UserResponseSchema()
+        form_data = UserInputSchema(),
+        response= UserResponseLogSchema()
     )
     
-    def post(self, params):
-        _address = py_.get(params, 'address')
-        _signature = py_.get(params, 'signature')
-        _message = py_.get(params,'message')
-        res  = UserHelper.verify_signature(_address,_message ,_signature )
+    def post(self, form_data):
+        _address = py_.get(form_data, 'address')
+        _signature = py_.get(form_data, 'signature')
+        _nonce = py_.get(form_data,'nonce')
+        res  = UserHelper.verify_signature(_address,_nonce ,_signature )
         return res

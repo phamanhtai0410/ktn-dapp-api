@@ -15,6 +15,16 @@ class UserResponseSchema(Schema):
 
     message = fields.String(default='', missing='')
     address = fields.String(default='', missing='')
+    nonce = fields.Int(default='', missing='')
+
+
+class UserResponseLogSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+
+    result = fields.String(default='', missing='')
+    address = fields.String(default='', missing='')
 
 class UserInputSchema(Schema):
     class Meta:
@@ -24,7 +34,7 @@ class UserInputSchema(Schema):
     address = fields.String(required=True)
     # sign_message = fields.String(required=True)
     signature = fields.String(required=True)
-    message = fields.String(required=True)
+    nonce = fields.Int(required=True)
 
 class UserRequestParams(Schema):
     class Meta:
