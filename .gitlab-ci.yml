@@ -2,7 +2,6 @@ variables:
   REGION: asia-southeast1
   IMAGE_NAME: ktn-dapp-api
   IMAGE_NAME_WORKER: ktn-dapp-api-worker
-  APP_NAME_DAPP: ktn-dapp-api
   CONTAINER_REPO_ASIA_STAG: 968557029040.dkr.ecr.ap-southeast-1.amazonaws.com/stag/ktn-dapp-api
   NAMESPACE_STAG: ktn-api-stag
   FULLREPO_ASIA_STAG: $CONTAINER_REPO_ASIA_STAG:$CI_COMMIT_SHA
@@ -35,12 +34,14 @@ stages:
 .predeploy: &predeploy |
   apk add --no-cache  bash git  python3 py3-pip curl
   pip3 install --upgrade pip 
-  pip3 install --no-cache-dir awscli
-  helm plugin install https://github.com/hypnoglow/helm-s3.git --version 0.12.0
+  pip3 install --no-cache-dir awscli==1.19.112
+  helm plugin install https://github.com/hypnoglow/helm-s3.git
   helm repo add helm-template s3://esol-helm-template
   helm pull s3://esol-helm-template/helm-template-$HELM_VERSION.tgz --untar=true
-  
-
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+  - .cache/pip
 build_stag:
   image: docker:19.03.1
   tags:
@@ -50,31 +51,30 @@ build_stag:
   - docker:19.03.1-dind
   before_script:
     - apk add --no-cache curl jq python py-pip wget git bash
-    - pip install awscli 
     - git submodule add -f --branch stag https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/katana/ktn-lib.git lib
-    - export VERIFY_CHECKSUM=false && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod +x ./get_helm.sh && ./get_helm.sh
-    - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
     - git submodule sync --recursive
     - git submodule update --init --remote --recursive
+    - pip install awscli==1.19.112
+    - export VERIFY_CHECKSUM=false && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod +x ./get_helm.sh && ./get_helm.sh
+    - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
+
   script:
     - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $CONTAINER_REPO_ASIA_STAG
     - |
       if [ "$CI_COMMIT_REF_NAME" == "stag" ]; then
         sed -i -e "s#\[IMAGE_NAME_WORKER\]#$IMAGE_NAME_WORKER#g" skaffold.yaml
         sed -i -e "s#\[NAMESPACE\]#$NAMESPACE_STAG#g" skaffold.yaml
+        sed -i -e "s#\[IMAGE_NAME\]#$IMAGE_NAME#g" skaffold.yaml
         sed -i -e "s#\[CONTAINER_REPO\]#$CONTAINER_REPO_ASIA_STAG#g" skaffold.yaml
-        sed -i -e "s#\[APP_NAME\]#$IMAGE_NAME#g" skaffold.yaml
-        sed -i -e "s#\[CI_COMMIT_REF_NAME\]#$CI_COMMIT_REF_NAME#g" skaffold.yaml
-        cat skaffold.yaml
       fi
-    - /usr/local/bin/skaffold build -p profile-stag --file-output=build_sync.json
+    - /usr/local/bin/skaffold build -p profile-stag --file-output=build.json
   only:
     refs:
       - stag
-   
   artifacts:
     paths:
-    - build_sync.json
+    - skaffold.yaml
+    - build.json
 
 deploy_stag:
   stage: deploy
@@ -84,46 +84,40 @@ deploy_stag:
   script:
     - *predeploy
     - *kubectl_config
+    - git clone https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/rinz-io-devops/helm-value/katana/$IMAGE_NAME.git
+    - mv $IMAGE_NAME/stag.yaml .
     - |
       if [ "$CI_COMMIT_REF_NAME" == "stag" ]; then
-        sed -i -e "s#\[NAMESPACE\]#$NAMESPACE_STAG#g" skaffold.yaml
-        sed -i -e "s#\[APP_NAME\]#$APP_NAME_DAPP#g" skaffold.yaml
-        sed -i -e "s#\[CONTAINER_REPO\]#$CONTAINER_REPO_ASIA_STAG#g" skaffold.yaml
-        sed -i -e "s#\[CI_COMMIT_REF_NAME\]#$CI_COMMIT_REF_NAME#g" skaffold.yaml
+        sed -i -e "s#\[FULLREPO_ASIA\]#$FULLREPO_ASIA_STAG#g" stag.yaml
+        sed -i -e "s#\[NAMESPACE\]#$NAMESPACE_STAG#g" stag.yaml
       fi
-    - git clone https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/rinz-io-devops/helm-value/katana/$IMAGE_NAME.git
-    - mv $IMAGE_NAME/${IMAGE_NAME}-stag.yaml .
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
     - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
-    - /usr/local/bin/skaffold deploy -p profile-${APP_NAME_DAPP}-stag   -a build_sync.json
 
+    - /usr/local/bin/skaffold deploy -p profile-stag   -a build.json
   only:
     refs:
       - stag
- 
 
-
-
-deploy_worker_stag:
-  stage: deploy
-  image: alpine/helm:3.2.1
-  tags:
-  - esol-stag
-  script:
-    - *predeploy
-    - *kubectl_config
-    - git clone https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/rinz-io-devops/helm-value/katana/$IMAGE_NAME.git
-    - mv $IMAGE_NAME/worker-stag.yaml .
-    - |
-      if [ "$CI_COMMIT_REF_NAME" == "stag" ]; then
-        sed -i -e "s#\[FULLREPO_ASIA\]#$FULLREPO_ASIA_STAG#g" worker-stag.yaml
-        sed -i -e "s#\[NAMESPACE\]#$NAMESPACE_STAG#g" worker-stag.yaml
-      fi
-    - cat skaffold.yaml 
-    - curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
-    - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
-    - /usr/local/bin/skaffold deploy -p profile-worker-stag   -a build_sync.json
-  only:
-    refs:
-      - stag
+ deploy_worker_stag:
+   stage: deploy
+   image:  alpine/helm:3.2.1
+   tags:
+   - esol-stag
+   script:
+     - *predeploy
+     - *kubectl_config
+     - git clone https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/rinz-io-devops/helm-value/katana/$IMAGE_NAME.git
+     - mv $IMAGE_NAME/worker-stag.yaml .
+     - |
+       if [ "$CI_COMMIT_REF_NAME" == "stag" ]; then
+         sed -i -e "s#\[FULLREPO_ASIA\]#$FULLREPO_ASIA_STAG#g" worker-stag.yaml
+         sed -i -e "s#\[NAMESPACE\]#$NAMESPACE_STAG#g" worker-stag.yaml
+       fi
+     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
+     - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
+     - /usr/local/bin/skaffold deploy -p profile-worker-stag   -a build.json
+   only:
+     refs:
+       - stag
 
