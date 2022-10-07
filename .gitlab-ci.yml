@@ -113,7 +113,7 @@ deploy_worker_stag:
     - *predeploy
     - *kubectl_config
     - git clone https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/rinz-io-devops/helm-value/katana/$IMAGE_NAME.git
-    - mv $IMAGE_NAME/worker-stag.yaml .
+    - mv $IMAGE_NAME/${IMAGE_NAME}-worker-stag.yaml .
     - |
       if [ "$CI_COMMIT_REF_NAME" == "stag" ]; then
         sed -i -e "s#\[FULLREPO_ASIA\]#$FULLREPO_ASIA_STAG#g" worker-stag.yaml
@@ -122,7 +122,7 @@ deploy_worker_stag:
     - cat skaffold.yaml 
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
     - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && chmod +x skaffold &&  mv skaffold /usr/local/bin
-    - /usr/local/bin/skaffold deploy -p profile-worker-stag   -a build.json
+    - /usr/local/bin/skaffold deploy -p profile-worker-stag   -a build_sync.json
   only:
     refs:
       - stag
