@@ -111,7 +111,7 @@ deploy_worker_stag:
     - *predeploy
     - *kubectl_config
     - git clone https://read-token:$GITLAB_TOKEN@gitlab.rinznetwork.com/rinz-io-devops/helm-value/katana/$IMAGE_NAME.git
-    - mv $IMAGE_NAME/${IMAGE_NAME}-worker-stag.yaml .
+    - mv $IMAGE_NAME/worker-stag.yaml .
     - |
       if [ "$CI_COMMIT_REF_NAME" == "stag" ]; then
         sed -i -e "s#\[FULLREPO_ASIA\]#$FULLREPO_ASIA_STAG#g" worker-stag.yaml
