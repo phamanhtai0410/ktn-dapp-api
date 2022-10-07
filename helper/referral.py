@@ -97,6 +97,14 @@ class ReferralHelper:
             }
         }, upsert=True)
 
+        ReferralModel.update_one({
+            'address': _address
+        }, {
+            'address_linked': _address_linked,
+            'code_linked': ref_code,
+            'updated_by': 'api'
+        })
+
 
         _referral_log = ReferralLogModel.insert_one({
             'address': _address,
