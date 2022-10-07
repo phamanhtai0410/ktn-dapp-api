@@ -1,7 +1,7 @@
 variables:
   REGION: asia-southeast1
   IMAGE_NAME: ktn-dapp-api
-  IMAGE_NAME: ktn-dapp-api-worker
+  IMAGE_NAME_WORKER: ktn-dapp-api-worker
   APP_NAME_DAPP: ktn-dapp-api
   CONTAINER_REPO_ASIA_STAG: 968557029040.dkr.ecr.ap-southeast-1.amazonaws.com/stag/ktn-dapp-api
   NAMESPACE_STAG: ktn-api-stag
