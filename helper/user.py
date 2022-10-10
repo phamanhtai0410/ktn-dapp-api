@@ -1,5 +1,6 @@
 
 from lib.exception import BadRequest
+from exception import InvalidNonce, InvalidSignature
 from eth_account.messages import defunct_hash_message
 from lib.utils import util_web3, dt_utcnow
 from email import message
@@ -9,12 +10,13 @@ from tasks import referral
 from .wallet import WalletHelper
 
 
+
 class UserHelper:
     
     @staticmethod
     def validate_nonce(_nonce):
         _dt = dt_utcnow().timestamp() - _nonce
-        if 10000 >= _dt >= 0:
+        if 360 >= _dt >= 0:
             return True
 
         return False
@@ -32,16 +34,9 @@ class UserHelper:
     
     @classmethod
     def verify_signature(cls, address,nonce,signature):
-        if not address:
-            raise BadRequest('address can not null')
-        if not nonce:
-            raise BadRequest('nonce can not null')
-        if not signature:
-            raise BadRequest('signature can not null')
-        
-        check = cls.validate_nonce(nonce)
-        if check ==False: 
-            raise BadRequest('nonce is invalid')
+   
+        if not cls.validate_nonce(nonce): 
+            raise InvalidNonce('nonce invalid')
         _address = address.lower()
         _message = WalletHelper._get_sign_msg(_address, nonce)
         _signer = WalletHelper.get_address_of(signature,_message)
@@ -60,5 +55,5 @@ class UserHelper:
                
             return {"result":"Valid!",
                     "address": _address}
-        return {"result":"Invalid!"}
+        raise InvalidSignature('signature invalid')
         
