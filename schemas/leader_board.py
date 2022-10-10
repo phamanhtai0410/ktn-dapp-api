@@ -15,6 +15,7 @@ class LeaderBoardItem(Schema):
         ordered = True
 
     address = fields.String()
+    event = fields.String()
     total_user_linked = fields.Int()
 
 class LeaderBoardResponse(Schema):
