@@ -24,5 +24,5 @@ class LeaderBoardResource(Resource):
         _page = py_.get(params, 'page')
         _page_size = py_.get(params, 'page_size')
         _event = py_.get(params, 'event', Constants.TOP_REFERRAL_EVENT_NAME)
-        _referral = LeaderBoardHelper.get_leader_board(event=_event, page=_page, page_size=_page_size, search=_search)
+        _referral = LeaderBoardHelper.get_top_referral_leader_board(event=_event, page=_page, page_size=_page_size, search=_search)
         return _referral

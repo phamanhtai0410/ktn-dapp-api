@@ -6,7 +6,7 @@ import pydash as py_
 class LeaderBoardHelper:
 
     @staticmethod
-    def get_leader_board(event, page, page_size, search):
+    def get_top_referral_leader_board(event, page, page_size, search):
 
         _filter = {
             'event': event
