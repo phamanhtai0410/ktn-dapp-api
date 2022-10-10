@@ -52,12 +52,12 @@ class UserHelper:
                 }
             )
             if not _user:
-                referral.task_generate_referral_code.delay(address = _address)
+                referral.task_generate_referral_code.delay(address = _address) 
                 UserModel.insert_one({
                     'address': _address,
                     'created_by': 'thanh'
                 })
-                
+               
             return {"result":"Valid!",
                     "address": _address}
         return {"result":"Invalid!"}

@@ -13,7 +13,6 @@ from helper.referral import ReferralHelper
 
 @worker.task(name='worker.generate_referral_code', rate_limit='1000/s')
 def task_generate_referral_code(address):
-    print("-================a======================-")
     if not address or not isinstance(address, str):
         return 'DONE - address can not null'
 
