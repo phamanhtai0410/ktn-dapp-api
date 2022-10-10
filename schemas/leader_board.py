@@ -6,6 +6,8 @@
 """
 from marshmallow import Schema, EXCLUDE, RAISE, fields
 
+from constants import Constants
+
 
 class LeaderBoardItem(Schema):
     class Meta:
@@ -31,5 +33,6 @@ class LeaderBoardRequestParams(Schema):
         ordered = True
     
     search = fields.String(allow_none=True)
+    event = fields.String(default=Constants.TOP_REFERRAL_EVENT_NAME, missing=Constants.TOP_REFERRAL_EVENT_NAME)
     page = fields.Int(default=1, missing=1)
     page_size = fields.Int(default=10, missing=10)
