@@ -31,4 +31,4 @@ class ReferralRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE
         
-    address = fields.String(default='', missing='')
+    address = fields.String(required=True)
