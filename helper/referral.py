@@ -115,13 +115,16 @@ class ReferralHelper:
             }
         }, upsert=True)
 
-        ReferralModel.update_one({
+        ReferralModel.col.find_one_and_update({
             'address': _address
         }, {
-            'address_linked': _address_linked,
-            'code_linked': ref_code,
-            'updated_by': 'api'
-        })
+            '$set': {
+                'address': _address,
+                'address_linked': _address_linked,
+                'code_linked': ref_code,
+                'updated_by': 'api',
+                'updated_time': dt_utcnow(),
+        }}, upsert=True)
 
 
         _referral_log = ReferralLogModel.insert_one({
