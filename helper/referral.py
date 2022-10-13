@@ -2,6 +2,7 @@ import string
 import random
 
 from constants import Constants
+from exceptions.referral import InvalidReferralCodeEx, InvalidUserHasInputCode, InvalidUserInputOwnCode
 from helper.wallet import WalletHelper
 from lib.exception import BadRequest
 from lib.utils import dt_utcnow
@@ -44,7 +45,7 @@ class ReferralHelper:
         }, query=None)
 
         if not _referral:
-            raise BadRequest('referral not found')
+            raise InvalidReferralCodeEx
 
         _user_leader_board = LeaderBoardModel.find_one({
             'address': _address,
@@ -87,20 +88,20 @@ class ReferralHelper:
         })
         
         if _referral_log:
-            raise BadRequest('user has been linked with another code')
+            raise InvalidUserHasInputCode
 
         _referral = ReferralModel.find_one_with_cache({
             'code': ref_code
         }, query=None)
 
         if not _referral:
-            raise BadRequest('referral code not found')
+            raise InvalidReferralCodeEx
         
         _address_linked = py_.get(_referral, 'address')
 
         # user can not input user's own code
         if _address == _address_linked:
-            raise BadRequest("user can not input user's own code")
+            raise InvalidUserInputOwnCode
 
         LeaderBoardModel.col.find_one_and_update({
             'address': _address_linked,
