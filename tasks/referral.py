@@ -42,16 +42,19 @@ def task_generate_referral_code(address):
     })
     if _referral:
         return 'DONE - referral existed'
-    
+
     _code = generate_referral_code(code_length=Constants.REFERRAL_CODE_LENGTH)
     ReferralModel.col.find_one_and_update({
         'address': _address
-    },{
-        'address': _address,
-        'code': _code,
-        'created_by': 'worker',
-        'created_time': dt_utcnow()
-    })
+    },
+        {
+            '$set': {
+                'address': _address,
+                'code': _code,
+                'created_by': 'worker',
+                'created_time': dt_utcnow()
+            }
+    }, upsert=True)
     return f"DONE - generate referral code for {_address} with {_code}"
 
 @worker.task(name='worker.calculate_referral_rank', rate_limit='1000/s')
