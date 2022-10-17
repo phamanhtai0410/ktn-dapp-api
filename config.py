@@ -31,7 +31,9 @@ class Config:
 
     CELERY_ROUTES = {
         'worker.task_hello': {'queue': 'hello-queue'},
-        'worker.generate_referral_code': {'queue': 'ktn-dapp-queue'}
+        'worker.generate_referral_code': {'queue': 'ktn-dapp-queue'},
+        'worker.calculate_referral_rank': {'queue': 'ktn-dapp-queue'},
+        
     }
     PUBLIC_PATH = os.getenv('PUBLIC_PATH')
     REDIS_CLUSTER = json.loads(os.getenv('REDIS_CLUSTER'))

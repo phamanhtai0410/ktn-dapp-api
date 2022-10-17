@@ -16,7 +16,8 @@ class LeaderBoardItem(Schema):
 
     address = fields.String()
     event = fields.String()
-    total_user_linked = fields.Int()
+    point = fields.Int()
+    rank = fields.Int()
 
 class LeaderBoardResponse(Schema):
     class Meta:

@@ -7,31 +7,15 @@ from helper.wallet import WalletHelper
 from lib.exception import BadRequest
 from lib.utils import dt_utcnow
 from models import LeaderBoardModel, ReferralLogModel, ReferralModel
-from schemas.referral import ReferralResponseSchema
 import pydash as py_
 
-from eth_account.messages import defunct_hash_message
 from web3 import Web3
 
+from tasks import task_calculate_referral_rank
 
 web3 = Web3()
 
 class ReferralHelper:
-
-    @staticmethod
-    def generate_referral_code(code_length):
-        ref_code = ''
-        while True:
-            all_chars = list(string.digits + string.ascii_uppercase)
-            random.shuffle(all_chars)
-            ref_code = ''.join(all_chars[:code_length])
-            check_ref_code = ReferralModel.find_one(
-                filter={
-                    'code': ref_code
-                }
-            )
-            if not check_ref_code:
-                return ref_code 
     
     @staticmethod
     def get_referral_code(address):
@@ -54,7 +38,7 @@ class ReferralHelper:
 
         return {
             **_referral,
-            'total_user_linked': py_.get(_user_leader_board, 'total_user_linked', 0)
+            'point': py_.get(_user_leader_board, 'point', 0)
         }
 
     @staticmethod
@@ -108,7 +92,7 @@ class ReferralHelper:
             'event': Constants.TOP_REFERRAL_EVENT_NAME
         }, {
             '$inc': {
-                'total_user_linked': 1
+                'point': 1
             },
             '$set': {
                 'updated_by': 'api',
@@ -134,5 +118,7 @@ class ReferralHelper:
             'code_linked': ref_code,
             'created_by': 'api'
         })
+
+        task_calculate_referral_rank.delay()
 
         return _referral_log

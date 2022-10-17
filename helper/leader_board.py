@@ -17,9 +17,7 @@ class LeaderBoardHelper:
                 'address': search
             }
 
-        sort_func = lambda x: True
-        if event == Constants.TOP_REFERRAL_EVENT_NAME:
-            sort_func = lambda x: py_.get(x, 'total_user_linked', 0)
+        sort_func = lambda x: py_.get(x, 'point', 0)
 
         # get leader board and sort with total user input code descending
         _leader_board = LeaderBoardModel.page(
