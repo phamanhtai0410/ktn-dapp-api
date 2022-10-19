@@ -19,7 +19,7 @@ class Config:
     # Setup db
     MONGO_URI = os.getenv('MONGO_URI')
     # Authentication
-    AUTH_ADDRESS = os.getenv('AUTH_ADDRESS')
+    AUTH_ADDRESS = os.getenv('AUTH_ADDRESS', '')
 
     CELERY_IMPORTS = ['tasks']
     ENABLE_UTC = True
@@ -33,8 +33,9 @@ class Config:
         'worker.task_hello': {'queue': 'hello-queue'},
         'worker.generate_referral_code': {'queue': 'ktn-dapp-queue'},
         'worker.calculate_referral_rank': {'queue': 'ktn-dapp-queue'},
-        
+        'worker.task_wallet_exchange': {'queue': 'ktn-dapp-exchange-queue'}
     }
     PUBLIC_PATH = os.getenv('PUBLIC_PATH')
     REDIS_CLUSTER = json.loads(os.getenv('REDIS_CLUSTER'))
-
+    WALLET_IAPI = os.getenv('WALLET_IAPI')
+    REDLOCK_REDIS = json.loads(os.getenv('REDLOCK_REDIS', '[]'))

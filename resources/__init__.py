@@ -4,6 +4,7 @@
         -
         -
 """
+from resources.exchange import ExchangeResource
 from resources.health_check import HealthCheck
 from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
@@ -19,5 +20,6 @@ api_resources = {
     '/referral': ReferralResource,
     '/referral/validate': ReferralSignMessageResource,
     '/leader_board': LeaderBoardResource,
-    '/user': User
+    '/user': User,
+    '/exchange': ExchangeResource
 }

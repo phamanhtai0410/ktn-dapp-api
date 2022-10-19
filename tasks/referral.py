@@ -29,6 +29,7 @@ def task_generate_referral_code(address):
             )
             if not check_ref_code:
                 return ref_code
+
     if not address or not isinstance(address, str):
         return 'DONE - address can not null'
 
@@ -54,8 +55,9 @@ def task_generate_referral_code(address):
                 'created_by': 'worker',
                 'created_time': dt_utcnow()
             }
-    }, upsert=True)
+        }, upsert=True)
     return f"DONE - generate referral code for {_address} with {_code}"
+
 
 @worker.task(name='worker.calculate_referral_rank', rate_limit='1000/s')
 def task_calculate_referral_rank():

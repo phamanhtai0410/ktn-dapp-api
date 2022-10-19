@@ -16,7 +16,8 @@ class ReRateEx(Exception):
 
     pass
 
-class InvalidNonce(Exception):   
+
+class InvalidNonce(Exception):
     def __init__(self, msg='Invalid nonce.', *args: object, **kwargs) -> None:
         super().__init__(*args)
         self.status_code = 406
@@ -25,7 +26,9 @@ class InvalidNonce(Exception):
             'nonce': 'Invalid'
         }])
         self.error_code = 'E_NONCE'
+
     pass
+
 
 class InvalidSignature(Exception):
     def __init__(self, msg='Invalid signature.', *args: object, **kwargs) -> None:
@@ -36,5 +39,17 @@ class InvalidSignature(Exception):
             'signature': 'Invalid'
         }])
         self.error_code = 'E_SIGNATURE'
+
     pass
 
+
+class ELockAddress(Exception):
+    def __init__(self, msg='Your address has a tx being processed. Please try again in 1 minute.', *args: object,
+                 **kwargs) -> None:
+        super().__init__(*args)
+        self.status_code = 400
+        self.msg = msg
+        self.errors = []
+        self.error_code = 'E_LOCK_ADDRESS'
+
+    pass
