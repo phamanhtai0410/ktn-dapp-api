@@ -56,5 +56,5 @@ class UserInfoResponseParams(Schema):
 
     _id = ObjectIdField()
     address = fields.String(default='', missing='')
-    total_points =fields.Integer(default=0, missing=0)
+    total_points =fields.Float(default=0, missing=0)
     created_time = DatetimeField(default=0, missing=0)
