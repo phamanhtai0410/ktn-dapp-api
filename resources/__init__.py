@@ -10,7 +10,7 @@ from resources.hello import HelloWorld
 from resources.iapi import iapi_resources
 from resources.referral import ReferralResource
 from resources.leader_board import LeaderBoardResource
-from resources.user import User
+from resources.user import User, UserInfo
 from resources.referral_sign_message import ReferralSignMessageResource
 
 api_resources = {
@@ -21,5 +21,6 @@ api_resources = {
     '/referral/validate': ReferralSignMessageResource,
     '/leader_board': LeaderBoardResource,
     '/user': User,
-    '/exchange': ExchangeResource
+    '/exchange': ExchangeResource,
+    '/user_info': UserInfo
 }
