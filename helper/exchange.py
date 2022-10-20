@@ -37,7 +37,7 @@ class ExchangeHelper:
     @classmethod
     def exchange_point(cls, address, amount, signature, timestamp):
         debug(timestamp < dt_utcnow().timestamp() - 60)
-        if timestamp < dt_utcnow().timestamp() - 60*60:  # 60s
+        if timestamp < dt_utcnow().timestamp() - 60*6000:  # 60s
             raise BadRequest("Invalid nonce.", errors=[{
                 'nonce': 'Invalid.'
             }])
