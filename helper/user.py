@@ -1,4 +1,5 @@
 
+from distutils.log import error
 from lib.exception import BadRequest
 from exception import InvalidNonce, InvalidSignature
 from eth_account.messages import defunct_hash_message
@@ -56,4 +57,18 @@ class UserHelper:
             return {"result":"Valid!",
                     "address": _address}
         raise InvalidSignature('signature invalid')
+    
+    
+    def get_user_info(address):
+        _address = address.lower()
+        _user = UserModel.find_one(
+                filter={
+                    'address': _address
+                }
+            )
+        if not _user:
+            raise BadRequest('address not found', errors=[{
+                'address': 'not found.'
+            }])
+        return _user
         
