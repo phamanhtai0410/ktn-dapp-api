@@ -14,7 +14,7 @@ class LeaderBoardHelper:
         if search:
             _filter = {
                 **_filter,
-                'address': search
+                'address': search.lower()
             }
 
         sort_func = lambda x: py_.get(x, 'point', 0)
