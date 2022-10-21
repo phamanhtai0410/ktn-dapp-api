@@ -10,7 +10,10 @@ import motor
 from flask_pymongo import PyMongo
 import motor.motor_asyncio
 from rediscluster import RedisCluster
+from redlock import Redlock
+
 from config import Config
+from socket_io_emitter import Emitter
 
 
 class InterfaceAsync:
@@ -28,6 +31,9 @@ redis_cluster = RedisCluster(
     decode_responses=True,
     skip_full_coverage_check=True
 )
+socket_io = Emitter(Config.REDIS_CLUSTER[0])
+dlm = Redlock(Config.REDLOCK_REDIS, retry_count=0)
+
 from lib import HTTPSecurity
 
 security = HTTPSecurity(redis=redis_cluster, auth_address=Config.AUTH_ADDRESS)
