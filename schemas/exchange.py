@@ -4,7 +4,7 @@
         -
         -
 """
-from marshmallow import Schema, EXCLUDE, fields
+from marshmallow import Schema, EXCLUDE, fields, validate
 
 from lib import NotBlank
 
@@ -14,6 +14,10 @@ class MsgQuerySchema(Schema):
         unknown = EXCLUDE
 
     amount = fields.Float(required=True)
+    event = fields.Str(required=True, validate=validate.OneOf([
+        'stake',
+        'top_referral'
+    ]))
 
 
 class ExchangeForm(Schema):
@@ -24,3 +28,7 @@ class ExchangeForm(Schema):
     signature = fields.Str(required=True, validate=NotBlank())
     nonce = fields.Float(required=True)
     address = fields.Str(required=True)
+    event = fields.Str(required=True, validate=validate.OneOf([
+        'stake',
+        'top_referral'
+    ]))

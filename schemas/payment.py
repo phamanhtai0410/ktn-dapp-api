@@ -12,7 +12,7 @@ class PaymentRequestParams(Schema):
     class Meta:
         unknown = EXCLUDE
         
-    chain_id = fields.Integer(required=True)
+    chain_id = fields.Integer(required=False)
     
 class PaymentResponseParams(Schema):
     class Meta:
@@ -33,4 +33,4 @@ class PaymentListResponseParams(Schema):
         unknown = EXCLUDE
         ordered = True
     
-    items = fields.List(fields.Nested(PaymentResponseParams), default=[], missing=[])
+    assets = fields.List(fields.Nested(PaymentResponseParams), default=[], missing=[])

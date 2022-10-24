@@ -14,7 +14,7 @@ from models import PaymentModel
 class PaymentHelper:
     
     @staticmethod
-    def get_payment_helper(chain_id):
+    def get_payment_method(chain_id):
         _filter = {
         }
         if chain_id:
@@ -22,8 +22,10 @@ class PaymentHelper:
                 'chain_id': chain_id
             }
 
-        _payment = PaymentModel.page(
+        _payment = PaymentModel.find(
             filter=_filter,
         )
 
-        return _payment
+        return {
+            'assets': _payment
+        }

@@ -4,6 +4,7 @@
         -
         -
 """
+from resources.event import EventResource
 from resources.exchange import ExchangeResource
 from resources.health_check import HealthCheck
 from resources.hello import HelloWorld
@@ -22,6 +23,7 @@ api_resources = {
     '/referral/validate': ReferralSignMessageResource,
     '/leader_board': LeaderBoardResource,
     '/user': User,
+    '/event': EventResource,
     '/exchange': ExchangeResource,
     '/user_info': UserInfo, 
     '/payment': Payment
