@@ -32,7 +32,7 @@ class LeaderBoardHelper:
         )
         _items['items'] = [{
             'point': get(_item, 'total_points', 0),
-            'rank': page * page_size - (page_size - idex)
+            'rank': page * page_size - (page_size - idex) + 1
         } for idex, _item in enumerate(_items['items'])]
         # for _detail in _items['items']:
         #     _detail['point'] = _detail['total_points']
