@@ -11,14 +11,15 @@ from pydash import get
 from config import Config
 from helper.sign import SignHelper
 from helper.socket import SocketEmitter
-from models import UserModel
+from models import PointModel
 from worker import worker
 
 
 @worker.task(name='worker.task_wallet_exchange', rate_limit='1000/s')
-def task_wallet_exchange(address, amount, signature, sign_msg):
-    _user = UserModel.find_one({
-        'address': address
+def task_wallet_exchange(address, amount, signature, event,sign_msg):
+    _user = PointModel.find_one({
+        'address': address.lower(),
+        'event': event
     })
 
     if get(_user, 'total_points') < amount:
@@ -37,7 +38,8 @@ def task_wallet_exchange(address, amount, signature, sign_msg):
         'signature': {
             'sign': signature,
             'msg': sign_msg
-        }
+        },
+        'event': event
     })
     if _res.status_code != 200:
         sentry_sdk.capture_message(f"Fail: send transfer error: {_res.text}")

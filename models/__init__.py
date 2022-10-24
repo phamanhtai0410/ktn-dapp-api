@@ -24,3 +24,5 @@ UserModel = UserDao(connect_db.db.user, redis=redis_cluster, broker=Config.BROKE
                           project=Config.PROJECT)
 
 EventModel = DaoModel(connect_db.db.events, redis=redis_cluster)
+
+PointModel = DaoModel(connect_db.db.points, redis=redis_cluster)

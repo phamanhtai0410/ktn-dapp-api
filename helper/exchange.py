@@ -14,14 +14,14 @@ from helper.sign import SignHelper
 from helper.socket import SocketEmitter
 from lib import dt_utcnow, BadRequest
 from lib.logger import debug
-from models import UserModel
+from models import UserModel, PointModel
 from tasks import task_wallet_exchange
 
 
 class ExchangeHelper:
     @staticmethod
-    def get_msg(amount, timestamp):
-        return f"I exchange {amount} points from Katana to {amount} USDT at {timestamp} seconds timestamp."
+    def get_msg(amount, timestamp, event):
+        return f"I exchange {amount} points from '{event}' event of Katana to {amount} USDT at {timestamp} seconds timestamp."
 
     @staticmethod
     def lock_address(address):
@@ -35,17 +35,18 @@ class ExchangeHelper:
         return False
 
     @classmethod
-    def exchange_point(cls, address, amount, signature, timestamp):
+    def exchange_point(cls, address, amount, signature, event, timestamp):
         debug(timestamp < dt_utcnow().timestamp() - 60)
-        if timestamp < dt_utcnow().timestamp() - 60*6000:  # 60s
+        if timestamp < dt_utcnow().timestamp() - 60 * 6000:  # 60s
             raise BadRequest("Invalid nonce.", errors=[{
                 'nonce': 'Invalid.'
             }])
-        _user = UserModel.find_one({
-            'address': address.lower()
+        _user = PointModel.find_one({
+            'address': address.lower(),
+            'event': event
         })
 
-        _sign_msg = cls.get_msg(amount, timestamp)
+        _sign_msg = cls.get_msg(amount, timestamp, event)
 
         _sign_address = SignHelper.get_address_of_signature(
             signature=signature,
@@ -59,7 +60,7 @@ class ExchangeHelper:
             raise ELockAddress()
 
         task_wallet_exchange.delay(
-            address=address, amount=amount, signature=signature, sign_msg=_sign_msg
+            address=address, amount=amount, signature=signature, sign_msg=_sign_msg, event=event
         )
         return True
 

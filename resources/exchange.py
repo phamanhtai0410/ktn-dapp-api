@@ -39,7 +39,8 @@ class ExchangeResource(Resource):
             address=get(form_data, 'address').lower(),
             amount=get(form_data, 'amount'),
             signature=get(form_data, 'signature'),
-            timestamp=get(form_data, 'nonce')
+            timestamp=get(form_data, 'nonce'),
+            event=get(form_data,'event')
         )
         return {
             'status': 'PENDING'
