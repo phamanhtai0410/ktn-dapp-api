@@ -31,7 +31,7 @@ class LeaderBoardHelper:
             page_size=page_size
         )
         _items['items'] = [{
-            'point': _items['total_points'],
+            'point': get(_item, 'total_points', 0),
             'rank': page * page_size - (page_size - idex)
         } for idex, _item in enumerate(_items['items'])]
         # for _detail in _items['items']:
