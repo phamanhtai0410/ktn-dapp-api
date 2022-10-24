@@ -7,3 +7,4 @@
 
 from .referral import ReferralHelper
 from .user import UserHelper
+from .payment import PaymentHelper

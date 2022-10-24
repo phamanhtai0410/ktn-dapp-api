@@ -22,3 +22,6 @@ LeaderBoardModel = DaoModel(connect_db.db.leader_board, redis=redis_cluster, bro
 
 UserModel = UserDao(connect_db.db.user, redis=redis_cluster, broker=Config.BROKER_URL,
                           project=Config.PROJECT)
+
+PaymentModel  = DaoModel(connect_db.db.payment,redis=redis_cluster, broker=Config.BROKER_URL,
+                          project=Config.PROJECT) 
