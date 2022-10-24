@@ -34,10 +34,14 @@ class LeaderBoardHelper:
         for _detail in _items['items']:
             _detail['point'] = _detail['total_points']
 
-            _detail['total_points'] = get(LeaderBoardModel.find_one(filter={
+            _more = LeaderBoardModel.find_one(filter={
                 'address': get(_detail, 'address'),
                 'event': event
-            }), 'point', 0)
+            })
+            _detail['total_points'] = get(_more, 'total_points', 0)
+
+            _detail['rank'] = get(_more, 'rank', -1)
+
         #
         # _leader_board = LeaderBoardModel.page(
         #     filter=_filter,
