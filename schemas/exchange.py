@@ -16,7 +16,7 @@ class MsgQuerySchema(Schema):
     amount = fields.Float(required=True)
     event = fields.Str(required=True, validate=validate.OneOf([
         'stake',
-        'referral'
+        'top_referral'
     ]))
 
 
@@ -30,5 +30,5 @@ class ExchangeForm(Schema):
     address = fields.Str(required=True)
     event = fields.Str(required=True, validate=validate.OneOf([
         'stake',
-        'referral'
+        'top_referral'
     ]))
