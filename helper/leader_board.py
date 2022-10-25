@@ -16,25 +16,48 @@ class LeaderBoardHelper:
         if search:
             _filter = {
                 **_filter,
-                'address': search.lower()
+                # 'address': search.lower()
             }
 
-        sort_func = lambda x: py_.get(x, 'total_points', 0)
+        # sort_func = lambda x: py_.get(x, 'total_points', 0)
 
         # get leader board and sort with total user input code descending 20 -  1
-
-        _items = PointModel.page(
-            filter=_filter,
-            func_sort=sort_func,
-            sort=-1,
-            page=page,
-            page_size=page_size
-        )
-        _items['items'] = [{
-            **_item,
-            'point': get(_item, 'total_points', 0),
-            'rank': page * page_size - (page_size - idex) + 1
-        } for idex, _item in enumerate(_items['items'])]
+        if search:
+            _rank = PointModel.get_rank_of(
+                        event=event,
+                        address=search
+                    )
+            _point = get(PointModel.find_one({
+                        'event': event,
+                        'address': search
+                    }), 'total_points', 0) if _rank else 0
+            return {
+                'items': [{
+                    'rank': _rank,
+                    'point': _point,
+                    'address': search
+                }],
+                'num_of_page': 1,
+                'page_size': 1,
+                'page': 1
+            }
+        else:
+            _items, num_of_page = PointModel.get_rank(
+                event=event,
+                page=page,
+                page_size=page_size
+            )
+            return {
+                "items": _items,
+                'num_of_page': num_of_page,
+                'page_size': page_size,
+                'page': page
+            }
+        # _items['items'] = [{
+        #     **_item,
+        #     'point': get(_item, 'total_points', 0),
+        #     'rank': page * page_size - (page_size - idex) + 1
+        # } for idex, _item in enumerate(_items['items'])]
         # for _detail in _items['items']:
         #     _detail['point'] = _detail['total_points']
         #
@@ -54,5 +77,3 @@ class LeaderBoardHelper:
         #     page=page,
         #     page_size=page_size
         # )
-
-        return _items

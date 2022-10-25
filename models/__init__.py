@@ -7,6 +7,7 @@
 from config import Config
 from lib import AsyncDaoModel, DaoModel
 from connect import connect_db, redis_cluster, asyncio_mongo
+from .point import PointDao
 from .user import UserDao
 
 __models__ = ['ReferralModel', 'ReferralLogModel', 'LeaderBoardModel', 'UserModel']
@@ -29,4 +30,4 @@ PaymentModel  = DaoModel(connect_db.db.payment,redis=redis_cluster, broker=Confi
 
 EventModel = DaoModel(connect_db.db.events, redis=redis_cluster)
 
-PointModel = DaoModel(connect_db.db.points, redis=redis_cluster)
+PointModel = PointDao(connect_db.db.points, redis=redis_cluster)
