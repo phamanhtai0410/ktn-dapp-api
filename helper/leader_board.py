@@ -23,6 +23,7 @@ class LeaderBoardHelper:
 
         # get leader board and sort with total user input code descending 20 -  1
         if search:
+            search = search.lower()
             _rank = PointModel.get_rank_of(
                         event=event,
                         address=search
