@@ -22,12 +22,14 @@ class PointDao(DaoModel):
         _event_key = self.key_of_event(event)
         _rank = self.redis.zrevrange(_event_key, _start, _end - 1, withscores=True) or []
         _total = self.redis.zcard(_event_key) or 0
-
+        num_of_page = _total / page_size
+        if num_of_page > 0:
+            num_of_page = num_of_page + 1
         return [{
             'rank': _start + _ind + 1 if val[1] > 0 else -1,
             'point': val[1],
             'address': val[0]
-        } for _ind, val in enumerate(_rank)], _total
+        } for _ind, val in enumerate(_rank)], num_of_page
 
     def set_rank(self, event, address, point):
         self.redis.zadd(self.key_of_event(event), {address: point})

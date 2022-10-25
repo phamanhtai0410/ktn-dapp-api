@@ -50,7 +50,7 @@ class LeaderBoardHelper:
             )
             return {
                 "items": _items,
-                'num_of_page': num_of_page,
+                'num_of_page': num_of_page/page_size,
                 'page_size': page_size,
                 'page': page
             }
