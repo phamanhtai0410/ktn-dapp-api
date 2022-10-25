@@ -21,6 +21,7 @@ class PaymentResponseParams(Schema):
 
     _id = ObjectIdField()
     asset = fields.String(default='', missing='')
+    asset_address = fields.String(default='', missing='')
     chain =fields.String(default='', missing='')
     chain_id = fields.Integer(default=0, missing=0)
     asset_logo = fields.String(default='', missing='')
