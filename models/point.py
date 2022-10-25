@@ -27,7 +27,7 @@ class PointDao(DaoModel):
             'rank': _start + _ind + 1,
             'point': val[1],
             'address': val[0]
-        } for _ind, val in enumerate(_rank)],
+        } for _ind, val in enumerate(_rank)], _total
 
     def set_rank(self, event, address, point):
         self.redis.zadd(self.key_of_event(event), {address: point})
