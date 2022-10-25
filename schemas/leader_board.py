@@ -16,7 +16,7 @@ class LeaderBoardItem(Schema):
 
     address = fields.String()
     event = fields.String()
-    point = fields.Int()
+    point = fields.Float(missing=0)
     rank = fields.Int()
 
 class LeaderBoardResponse(Schema):
