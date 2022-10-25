@@ -24,7 +24,7 @@ class PointDao(DaoModel):
         _total = self.redis.zcard(_event_key) or 0
 
         return [{
-            'rank': _start + _ind + 1,
+            'rank': _start + _ind + 1 if val[1] > 0 else -1,
             'point': val[1],
             'address': val[0]
         } for _ind, val in enumerate(_rank)], _total
@@ -33,4 +33,4 @@ class PointDao(DaoModel):
         self.redis.zadd(self.key_of_event(event), {address: point})
 
     def get_rank_of(self, event, address):
-        return (self.redis.zscore(self.key_of_event(event), address) or -2) + 1
+        return (self.redis.zrevrank(self.key_of_event(event), address) or -2) + 1
