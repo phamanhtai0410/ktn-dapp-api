@@ -23,7 +23,8 @@ class ExchangeResource(Resource):
 
         _msg = ExchangeHelper.get_msg(
             amount=get(params, 'amount'),
-            timestamp=_timestamp
+            timestamp=_timestamp,
+            event=get(params,'event')
         )
 
         return {
