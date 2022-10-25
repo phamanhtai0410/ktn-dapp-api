@@ -13,6 +13,7 @@ from resources.referral import ReferralResource
 from resources.leader_board import LeaderBoardResource
 from resources.user import User, UserInfo
 from resources.referral_sign_message import ReferralSignMessageResource
+from resources.payment import Payment
 
 api_resources = {
     '/hello': HelloWorld,
@@ -24,5 +25,7 @@ api_resources = {
     '/user': User,
     '/event': EventResource,
     '/exchange': ExchangeResource,
-    '/user_info': UserInfo
+    '/user_info': UserInfo, 
+    '/payment': Payment
+    
 }
