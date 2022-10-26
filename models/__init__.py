@@ -9,13 +9,14 @@ from lib import AsyncDaoModel, DaoModel
 from connect import connect_db, redis_cluster, asyncio_mongo
 from .point import PointDao
 from .user import UserDao
+from .referral_log import ReferralLogDao
 
 __models__ = ['ReferralModel', 'ReferralLogModel', 'LeaderBoardModel', 'UserModel']
 
 ReferralModel = DaoModel(connect_db.db.referral, redis=redis_cluster, broker=Config.BROKER_URL,
                           project=Config.PROJECT)
 
-ReferralLogModel = DaoModel(connect_db.db.referral_log, redis=redis_cluster, broker=Config.BROKER_URL,
+ReferralLogModel = ReferralLogDao(connect_db.db.referral_log, redis=redis_cluster, broker=Config.BROKER_URL,
                           project=Config.PROJECT)
 
 LeaderBoardModel = DaoModel(connect_db.db.leader_board, redis=redis_cluster, broker=Config.BROKER_URL,
