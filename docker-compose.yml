@@ -1,8 +1,9 @@
 version: "3"
 
 services:
-  serivce:
-    image: micro-api
+  #serivce: 
+  ktn-dapp-api:
+    image: ktn-dapp-api
     build: .
     restart: always
     volumes:
@@ -12,9 +13,34 @@ services:
       - 6007:5005
     networks:
       - base-network
-
-    command: supervisord -n -c /etc/supervisor.d/service.conf
-
+    command: gunicorn --bind 0.0.0.0:5005 --workers=1 main:app --log-level=debug -c conf/gunicorn.py --timeout 0
+  
+  #serivce: 
+  ktn-dapp-exchange-queue:
+    image: ktn-dapp-exchange-queue
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+    #ports:
+    #  - 6007:5005
+    networks:
+      - base-network
+    command: celery --app worker worker -Q ktn-dapp-exchange-queue -l INFO -c 4
+  
+  #serivce: 
+  ktn-dapp-queue-worker:
+    image: ktn-dapp-queue-worker
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+    #ports:
+    #  - 6007:5005
+    networks:
+      - base-network
+    command: celery --app worker worker -Q ktn-dapp-queue -l INFO -c 4
 networks:
   base-network:
     external: true
+
