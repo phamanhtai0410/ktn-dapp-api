@@ -24,9 +24,9 @@ class ReferralHelper:
 
         _address = address.lower()
 
-        _referral = ReferralModel.find_one_with_cache({
+        _referral = ReferralModel.find_one({
             'address': _address
-        }, query=None)
+        }, cache=True)
 
         if not _referral:
             raise InvalidReferralCodeEx
@@ -67,16 +67,16 @@ class ReferralHelper:
             }])
 
         # check if user had been linked code
-        _referral_log = ReferralLogModel.find({
+        _referral_log = ReferralLogModel.find_one({
             'address': _address
-        })
+        }, cache=True)
         
         if _referral_log:
             raise InvalidUserHasInputCode
 
-        _referral = ReferralModel.find_one_with_cache({
+        _referral = ReferralModel.find_one({
             'code': ref_code
-        }, query=None)
+        }, cache=True)
 
         if not _referral:
             raise InvalidReferralCodeEx
@@ -117,7 +117,7 @@ class ReferralHelper:
             'address_linked': _address_linked,
             'code_linked': ref_code,
             'created_by': 'api'
-        })
+        }, worker=True)
 
         task_calculate_referral_rank.delay()
 
