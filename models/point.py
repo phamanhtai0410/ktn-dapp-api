@@ -35,4 +35,7 @@ class PointDao(DaoModel):
         self.redis.zadd(self.key_of_event(event), {address: point})
 
     def get_rank_of(self, event, address):
-        return (self.redis.zrevrank(self.key_of_event(event), address) or -2) + 1
+        _rank = self.redis.zrevrank(self.key_of_event(event), address)
+        if not isinstance(_rank, (int, float)):
+            return -1
+        return _rank + 1
