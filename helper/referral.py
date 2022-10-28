@@ -1,12 +1,14 @@
 import string
 import random
 
+from pydash import get
+
 from constants import Constants
 from exceptions.referral import InvalidReferralCodeEx, InvalidUserHasInputCode, InvalidUserInputOwnCode
 from helper.wallet import WalletHelper
 from lib.exception import BadRequest
 from lib.utils import dt_utcnow
-from models import LeaderBoardModel, ReferralLogModel, ReferralModel
+from models import LeaderBoardModel, ReferralLogModel, ReferralModel, PointModel
 import pydash as py_
 
 from web3 import Web3
@@ -38,7 +40,11 @@ class ReferralHelper:
 
         return {
             **_referral,
-            'point': py_.get(_user_leader_board, 'point', 0)
+            'point': py_.get(_user_leader_board, 'point', 0),
+            'total_earn': get(PointModel.find_one({
+                    'event': 'top_referral',
+                    'address': _address
+                }), 'total_points', 0)
         }
 
     @staticmethod

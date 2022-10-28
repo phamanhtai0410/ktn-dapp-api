@@ -42,14 +42,14 @@ class LeaderBoardHelper:
                 func_filter=func_filter,
                 hset_field='address'
             )
-            if search:
-                _leader_board['items'] = [{
-                    **x,
-                    'total_point': get(PointModel.find_one({
-                        'event': event,
-                        'address': get(x, 'address')
-                    }), 'total_points', 0)
-                } for x in _leader_board['items']]
+            # if search:
+            #     _leader_board['items'] = [{
+            #         **x,
+            #         'total_point': get(PointModel.find_one({
+            #             'event': event,
+            #             'address': get(x, 'address')
+            #         }), 'total_points', 0)
+            #     } for x in _leader_board['items']]
             return _leader_board
         # sort_func = lambda x: py_.get(x, 'total_points', 0)
 
