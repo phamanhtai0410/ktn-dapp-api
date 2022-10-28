@@ -13,25 +13,51 @@ class LeaderBoardHelper:
         _filter = {
             'event': event
         }
-        if search:
-            _filter = {
-                **_filter,
-                # 'address': search.lower()
-            }
 
+        if event == 'top_referral':
+
+            if search:
+                _filter = {
+                    **_filter,
+                    'address': search.lower()
+                }
+
+            def func_filter(item):
+                if search:
+                    if search.lower() == get(item, 'address'):
+                        return True
+                    return False
+
+                return True
+
+            sort_func = lambda x: py_.get(x, 'point', 0)
+
+            # get leader board and sort with total user input code descending
+            _leader_board = LeaderBoardModel.page(
+                filter=_filter,
+                func_sort=sort_func,
+                sort=-1,
+                page=page,
+                page_size=page_size,
+                cache=True,
+                func_filter=func_filter,
+                hset_field='address'
+            )
+
+            return _leader_board
         # sort_func = lambda x: py_.get(x, 'total_points', 0)
 
         # get leader board and sort with total user input code descending 20 -  1
         if search:
             search = search.lower()
             _rank = PointModel.get_rank_of(
-                        event=event,
-                        address=search
-                    )
+                event=event,
+                address=search
+            )
             _point = get(PointModel.find_one({
-                        'event': event,
-                        'address': search
-                    }), 'total_points', 0) if _rank else 0
+                'event': event,
+                'address': search
+            }), 'total_points', 0) if _rank else 0
             return {
                 'items': [{
                     'rank': _rank,

@@ -46,7 +46,11 @@ class PointDao():
         self.redis.zadd(self.key_of_event(event), {address: point})
 
     def get_rank_of(self, event, address):
-        return (self.redis.zrevrank(self.key_of_event(event), address) or -2) + 1
+        _rank = self.redis.zrevrank(self.key_of_event(event), address)
+        if not isinstance(_rank, (int, float)):
+            return -1
+        return _rank + 1
+
 
 
 pointModel = PointDao()
@@ -55,6 +59,4 @@ points = db.points.find({})
 # for _point in points:
 #     pointModel.set_rank(event=get(_point, 'event'),point=get(_point, 'total_points'),address=get(_point, 'address'))
 print(pointModel.get_rank(event='top_referral', page=1, page_size=2))
-print(pointModel.get_rank_of(event='stake', address="0x6094b4fa111cbd26db9b5f901eaca497a99ee7ce"))
-
-
+print(pointModel.get_rank_of(event='stake', address="0x29e754233f6a50ee5ae3ee6a0217ad907dc3386b"))
