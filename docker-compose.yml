@@ -1,20 +1,57 @@
 version: "3"
 
 services:
-  serivce:
-    image: micro-api
-    build: .
+  #serivce: 
+  ktn-dapp-api:
+    image: ktn-dapp-api
+    build: 
+      context: .
+      dockerfile: Dockerfile-server
     restart: always
     volumes:
       - ./:/webapps
-
     ports:
       - 6007:5005
     networks:
       - base-network
+    command: gunicorn --bind 0.0.0.0:5005 --workers=1 main:app --log-level=debug -c conf/gunicorn.py --timeout 0
+  
+  ktn-dapp-exchange-queue:
+    image: ktn-dapp-api
+    build: 
+      context: .
+      dockerfile: Dockerfile-server
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+    command: celery --app worker worker -Q ktn-dapp-exchange-queue -l INFO -c 4
+  
+  ktn-dapp-queue-worker:
+    image: ktn-dapp-api
+    build: 
+      context: .
+      dockerfile: Dockerfile-server
 
-    command: supervisord -n -c /etc/supervisor.d/service.conf
-
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+    command: celery --app worker worker -Q ktn-dapp-queue -l INFO -c 4
+  ktn-dapp-api-queue-worker:
+    image: ktn-dapp-api
+    build: 
+      context: .
+      dockerfile: Dockerfile-server
+    restart: always
+    volumes:
+      - ./:/webapps
+    networks:
+      - base-network
+    command: celery --app worker worker -Q katana-dapp-dapp-api-queue -l INFO -c 4
 networks:
   base-network:
     external: true
+

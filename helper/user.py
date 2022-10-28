@@ -45,30 +45,26 @@ class UserHelper:
             _user = UserModel.find_one(
                 filter={
                     'address': _address
-                }
-            )
+                }, cache=True)
             if not _user:
                 referral.task_generate_referral_code.delay(address = _address) 
                 UserModel.insert_one({
                     'address': _address,
                     'created_by': 'thanh'
-                })
-               
+                }, worker=True)
+            
             return {"result":"Valid!",
                     "address": _address}
         raise InvalidSignature('signature invalid')
     
-    
     def get_user_info(address):
         _address = address.lower()
         _user = UserModel.find_one(
-                filter={
-                    'address': _address
-                }
-            )
+            filter={
+                'address': _address
+            }, cache=True)
         if not _user:
             raise BadRequest('address not found', errors=[{
                 'address': 'not found.'
             }])
         return _user
-        

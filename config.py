@@ -13,7 +13,7 @@ load_dotenv()
 
 class Config:
     DEBUG = False
-    PROJECT = "referral-api"
+    PROJECT = "dapp-api"
     PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     SENTRY_DSN = os.getenv('SENTRY_DSN')
     # Setup db
