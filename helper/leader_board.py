@@ -43,13 +43,10 @@ class LeaderBoardHelper:
                 hset_field='address'
             )
             # if search:
-            #     _leader_board['items'] = [{
-            #         **x,
-            #         'total_point': get(PointModel.find_one({
-            #             'event': event,
-            #             'address': get(x, 'address')
-            #         }), 'total_points', 0)
-            #     } for x in _leader_board['items']]
+            _leader_board['items'] = [{
+                **value,
+                'rank': page * page_size - (page_size - _index) + 1
+            } for _index, value in enumerate(_leader_board['items'])]
             return _leader_board
         # sort_func = lambda x: py_.get(x, 'total_points', 0)
 
