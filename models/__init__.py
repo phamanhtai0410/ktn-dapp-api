@@ -7,6 +7,7 @@
 from config import Config
 from lib import AsyncDaoModel, DaoModel
 from connect import connect_db, redis_cluster, asyncio_mongo
+from .leader_board import LeaderBoardDao
 from .point import PointDao
 from .user import UserDao
 from .referral_log import ReferralLogDao
@@ -19,7 +20,7 @@ ReferralModel = DaoModel(connect_db.db.referral, redis=redis_cluster, broker=Con
 ReferralLogModel = ReferralLogDao(connect_db.db.referral_log, redis=redis_cluster, broker=Config.BROKER_URL,
                           project=Config.PROJECT)
 
-LeaderBoardModel = DaoModel(connect_db.db.leader_board, redis=redis_cluster, broker=Config.BROKER_URL,
+LeaderBoardModel = LeaderBoardDao(connect_db.db.leader_board, redis=redis_cluster, broker=Config.BROKER_URL,
                           project=Config.PROJECT)
 
 UserModel = UserDao(connect_db.db.user, redis=redis_cluster, broker=Config.BROKER_URL,

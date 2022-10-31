@@ -17,8 +17,14 @@ class LeaderBoardHelper:
         if event == 'top_referral':
 
             if search:
-                _filter = {
-                    **_filter
+                return {
+                    "items": [LeaderBoardModel.get_rank_of(
+                        event=event,
+                        address=search.lower()
+                    )],
+                    'num_of_page': 1,
+                    'page_size': page_size,
+                    'page': page
                 }
 
             def func_filter(item):
