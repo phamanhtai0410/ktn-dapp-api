@@ -1,0 +1,41 @@
+# -*- coding: utf-8 -*-
+"""
+   Description:
+        -
+        -
+"""
+from lib import DaoModel
+
+
+class PointDao(DaoModel):
+    def __init__(self, *args, **kwargs):
+        super(PointDao, self).__init__(*args, **kwargs)
+
+    def key_of_event(self, event):
+        return f'ktn:points:events:{event}'
+
+    def get_rank(self, event, page, page_size):
+        if page <= 0:
+            page = 1
+        _start = (page - 1) * page_size
+        _end = page * page_size
+        _event_key = self.key_of_event(event)
+        _rank = self.redis.zrevrange(_event_key, _start, _end - 1, withscores=True) or []
+        _total = self.redis.zcard(_event_key) or 0
+        num_of_page = int(_total / page_size)
+        if (_total % page_size) > 0:
+            num_of_page = num_of_page + 1
+        return [{
+            'rank': _start + _ind + 1 if val[1] > 0 else -1,
+            'point': val[1],
+            'address': val[0]
+        } for _ind, val in enumerate(_rank)], num_of_page
+
+    def set_rank(self, event, address, point):
+        self.redis.zadd(self.key_of_event(event), {address: point})
+
+    def get_rank_of(self, event, address):
+        _rank = self.redis.zrevrank(self.key_of_event(event), address)
+        if not isinstance(_rank, (int, float)):
+            return -1
+        return _rank + 1

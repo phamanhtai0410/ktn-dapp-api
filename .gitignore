@@ -1,0 +1,13 @@
+.idea
+*.pyc
+test
+*.env
+.vscode
+venv
+supervisord.pid
+skaffold.yaml
+.gitlab-ci.yml
+test.py
+*.model
+conf/keys
+/lib
