@@ -106,6 +106,7 @@ class ReferralHelper:
             }
         }, upsert=True)
 
+        # set level 1 affiliate
         ReferralModel.col.find_one_and_update({
             'address': _address
         }, {
@@ -117,6 +118,14 @@ class ReferralHelper:
                 'updated_time': dt_utcnow(),
         }}, upsert=True)
 
+        # push this address to child of address_linked
+        ReferralModel.col.find_one_and_update({
+            'address': _address_linked
+        }, {
+            '$push': {
+                'address_referral': address 
+            }
+        })
 
         _referral_log = ReferralLogModel.insert_one({
             'address': _address,

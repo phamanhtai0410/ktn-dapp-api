@@ -33,3 +33,5 @@ PaymentModel  = DaoModel(connect_db.db.payment,redis=redis_cluster, broker=Confi
 EventModel = DaoModel(connect_db.db.events, redis=redis_cluster)
 
 PointModel = PointDao(connect_db.db.points, redis=redis_cluster)
+
+SettingModel = DaoModel(connect_db.db.setting, redis=redis_cluster)
