@@ -34,14 +34,25 @@ class ReferralHelper:
             raise InvalidReferralCodeEx
 
         # get 5 level 1 referral of this address
-        _address_referral_level_1 = py_.get(_referral, 'address_referral', [])
-        if len(_address_referral_level_1) > 5:
-            _address_referral_level_1 = _address_referral_level_1[-5:]
+        _address_referral_level_1 = ReferralModel.page(
+            filter={
+                'address_linked': _address
+            },
+            page=1,
+            page_size=5,
+            sort=-1,
+            func_sort=lambda x: py_.get(x, 'updated_time', 0)
+        )
+        _address_referral_level_1 = [{
+            'address': py_.get(item, 'address'),
+            'updated_time': py_.get(item, 'updated_time', dt_utcnow()).timestamp()
+        } for item in py_.get(_address_referral_level_1, 'items', [])]
 
+        # get 5 level 2 referral of this address
         _address_referral_level_2 = ReferralModel.page(
             filter={
                 'address_linked': {
-                    "$in": _address_referral_level_1
+                    "$in": [py_.get(item, 'address') for item in _address_referral_level_1]
                 }
             },
             page=1,
@@ -49,7 +60,10 @@ class ReferralHelper:
             sort=-1,
             func_sort=lambda x: py_.get(x, 'updated_time', 0)
         )
-        _address_referral_level_2 = py_.get(_address_referral_level_2, 'items', [])
+        _address_referral_level_2 = [{
+            'address': py_.get(item, 'address'),
+            'updated_time': py_.get(item, 'updated_time', dt_utcnow()).timestamp()
+        } for item in py_.get(_address_referral_level_2, 'items', [])]
 
         _user_leader_board = LeaderBoardModel.find_one({
             'address': _address,
@@ -64,7 +78,7 @@ class ReferralHelper:
                     'address': _address
                 }), 'total_points', 0),
             'address_referral_level_1': _address_referral_level_1,
-            'address_referral_level_2': [py_.get(item, 'address') for item in _address_referral_level_2]
+            'address_referral_level_2': _address_referral_level_2
         }
 
     @staticmethod
