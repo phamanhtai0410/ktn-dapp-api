@@ -33,6 +33,24 @@ class ReferralHelper:
         if not _referral:
             raise InvalidReferralCodeEx
 
+        # get 5 level 1 referral of this address
+        _address_referral_level_1 = py_.get(_referral, 'address_referral', [])
+        if len(_address_referral_level_1) > 5:
+            _address_referral_level_1 = _address_referral_level_1[-5:]
+
+        _address_referral_level_2 = ReferralModel.page(
+            filter={
+                'address_linked': {
+                    "$in": _address_referral_level_1
+                }
+            },
+            page=1,
+            page_size=5,
+            sort=-1,
+            func_sort=lambda x: py_.get(x, 'updated_time', 0)
+        )
+        _address_referral_level_2 = py_.get(_address_referral_level_2, 'items', [])
+
         _user_leader_board = LeaderBoardModel.find_one({
             'address': _address,
             'event': Constants.TOP_REFERRAL_EVENT_NAME
@@ -44,7 +62,9 @@ class ReferralHelper:
             'total_earn': get(PointModel.find_one({
                     'event': 'top_referral',
                     'address': _address
-                }), 'total_points', 0)
+                }), 'total_points', 0),
+            'address_referral_level_1': _address_referral_level_1,
+            'address_referral_level_2': [py_.get(item, 'address') for item in _address_referral_level_2]
         }
 
     @staticmethod

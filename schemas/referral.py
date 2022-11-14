@@ -18,6 +18,8 @@ class ReferralResponseSchema(Schema):
     code_linked = fields.String(default='', missing='')
     point = fields.Int(default=0, missing=0)
     total_earn = fields.Float(default=0, missing=0)
+    address_referral_level_1 = fields.List(fields.String(), default=[], missing=[])
+    address_referral_level_2 = fields.List(fields.String(), default=[], missing=[])
 
 class ReferralInputSchema(Schema):
     class Meta:
