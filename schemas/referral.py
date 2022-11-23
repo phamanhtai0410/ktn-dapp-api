@@ -12,8 +12,10 @@ class AddressReferralItem(Schema):
         unknown = EXCLUDE
         ordered = True
     
-    address = fields.String()
-    updated_time = fields.Int()
+    address_level_1 = fields.String(default='', missing='')
+    updated_time_level_1 = fields.Int(default=0, missing=0)
+    address_level_2 = fields.String()
+    updated_time_level_2 = fields.Int()
 
 class ReferralResponseSchema(Schema):
     class Meta:
@@ -26,8 +28,7 @@ class ReferralResponseSchema(Schema):
     code_linked = fields.String(default='', missing='')
     point = fields.Int(default=0, missing=0)
     total_earn = fields.Float(default=0, missing=0)
-    address_referral_level_1 = fields.List(fields.Nested(AddressReferralItem), default=[], allow_none=True)
-    address_referral_level_2 = fields.List(fields.Nested(AddressReferralItem), default=[], allow_none=True)
+    address_referrals = fields.List(fields.Nested(AddressReferralItem), default=[], allow_none=True)
 
 class ReferralInputSchema(Schema):
     class Meta:
