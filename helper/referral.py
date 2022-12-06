@@ -33,6 +33,53 @@ class ReferralHelper:
         if not _referral:
             raise InvalidReferralCodeEx
 
+        # get 5 level 1 referral of this address
+        _address_referrals = ReferralModel.page(
+            filter={
+                'address_linked': _address
+            },
+            page=1,
+            page_size=5,
+            sort=-1,
+            func_sort=lambda x: py_.get(x, 'updated_time', 0)
+        )
+        _address_referrals = [{
+            'address_level_1': py_.get(item, 'address'),
+            'updated_time_level_1': py_.get(item, 'updated_time', dt_utcnow()).timestamp()
+        } for item in py_.get(_address_referrals, 'items', [])]
+
+        # get 5 level 2 referral of this address
+        _address_referral_level_2 = ReferralModel.page(
+            filter={
+                'address_linked': {
+                    "$in": [py_.get(item, 'address_level_1') for item in _address_referrals]
+                }
+            },
+            page=1,
+            page_size=5,
+            sort=-1,
+            func_sort=lambda x: py_.get(x, 'updated_time', 0)
+        )
+        _address_referral_level_2 = [{
+            'address_level_2': py_.get(item, 'address'),
+            'updated_time_level_2': py_.get(item, 'updated_time', dt_utcnow()).timestamp()
+        } for item in py_.get(_address_referral_level_2, 'items', [])]
+
+        _return_address_referral = []
+        if len(_address_referrals) > len(_address_referral_level_2):
+            for _idx, _item in enumerate(_address_referrals.copy()):
+                if _idx < len(_address_referral_level_2):
+                    _item['address_level_2'] =  _address_referral_level_2[_idx]['address_level_2']
+                    _item['updated_time_level_2'] = _address_referral_level_2[_idx]['updated_time_level_2']
+                _return_address_referral.append(_item)
+        else:
+            for _idx, _item in enumerate(_address_referral_level_2.copy()):
+                if _idx < len(_address_referrals):
+                    _item['address_level_1'] = _address_referrals[_idx]['address_level_1']
+                    _item['updated_time_level_1'] = _address_referrals[_idx]['updated_time_level_1']
+                _return_address_referral.append(_item)
+                
+
         _user_leader_board = LeaderBoardModel.find_one({
             'address': _address,
             'event': Constants.TOP_REFERRAL_EVENT_NAME
@@ -44,7 +91,8 @@ class ReferralHelper:
             'total_earn': get(PointModel.find_one({
                     'event': 'top_referral',
                     'address': _address
-                }), 'total_points', 0)
+                }), 'total_points', 0),
+            'address_referrals': _return_address_referral
         }
 
     @staticmethod
@@ -106,6 +154,7 @@ class ReferralHelper:
             }
         }, upsert=True)
 
+        # set level 1 affiliate
         ReferralModel.col.find_one_and_update({
             'address': _address
         }, {
@@ -117,6 +166,14 @@ class ReferralHelper:
                 'updated_time': dt_utcnow(),
         }}, upsert=True)
 
+        # push this address to child of address_linked
+        ReferralModel.col.find_one_and_update({
+            'address': _address_linked
+        }, {
+            '$push': {
+                'address_referral': address 
+            }
+        })
 
         _referral_log = ReferralLogModel.insert_one({
             'address': _address,

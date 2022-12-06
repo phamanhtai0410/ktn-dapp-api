@@ -1,39 +1,39 @@
-# Katana Inu Daap API
+# sh-metadata
 
-# RESTful API template
+RESTful API template
+===
+***********************************
 
----
-
-# Description
-
+Description
+===========
 This is a template project for creating REST APIs using Python 3 and Flask.
 
-# Requirements
 
+Requirements
+============
 See [requirements.txt](./requirements.txt).
 
 Run:
-
 ```commandline
   git clone git@gitlab.rinznetwork.com:scan-hub/sh-lib.git lib
   pip install -f ./lib/requirements.txt
   pip --no-cache-dir install "Flask[async]"
 
 ```
-
-# Usage
-
+Usage
+=====
 Run the following commands start the server (assumes activated Python3 virtual env):
 
 Run:
-`python main.py`
+```python main.py```
+  
 
-# Request
+Request
+=====
 
-- URL: `/{version}/{service}/{model}/{action}`
+- URL: ```/{version}/{service}/{model}/{action}```
 
 - Response:
-
 ```
     {
          "data": object,
@@ -42,9 +42,7 @@ Run:
          "msg": string
     }
 ```
-
 - Status code:
-
 ```
     200: OK
     400: Bad request
@@ -54,9 +52,7 @@ Run:
     405: Method Not Allowed
     500: Internal Server Error
 ```
-
 - Error: exception.py
-
 ```commandline
 
 class BadRequest(Exception):
@@ -73,25 +69,26 @@ class BadRequest(Exception):
 
 def endpoint():
  ....
-
+ 
  raise BadRequest
 
 ```
-
-# Security:
+Security:
+====
 
 - Authentication:
-  - Type: Bearer [token]
-  - Token: base64 encode
-  - Data:
-  ```
-  {
-      "payload": "{info}",
-      "signature": "signature of auth service"
-  }
-  ```
+    + Type: Bearer [token]
+    + Token: base64 encode
+    + Data:
+    ````
+    {
+        "payload": "{info}",
+        "signature": "signature of auth service"
+    }
 
-# Project structure:
+
+Project structure:
+====
 
 ```
     ├── README.rst
@@ -116,6 +113,6 @@ def endpoint():
     └── config.py
 ```
 
-- resources - holds all endpoints.
-- main.py - flask application initialization.
-- config.py - all global app config.
+* resources - holds all endpoints.
+* main.py - flask application initialization.
+* config.py - all global app config.
