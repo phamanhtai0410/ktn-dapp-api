@@ -15,6 +15,7 @@ from resources.user import User, UserInfo
 from resources.referral_sign_message import ReferralSignMessageResource
 from resources.payment import Payment
 from resources.setting import SettingResource
+from resources.royalty import Royalty
 
 api_resources = {
     '/hello': HelloWorld,
@@ -29,4 +30,7 @@ api_resources = {
     '/user_info': UserInfo, 
     '/payment': Payment,
     '/setting': SettingResource,
+    '/royalty_info': Royalty
+    
+    
 }

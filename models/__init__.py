@@ -11,8 +11,12 @@ from .leader_board import LeaderBoardDao
 from .point import PointDao
 from .user import UserDao
 from .referral_log import ReferralLogDao
+from .royalty import RoyaltyDao, RoyaltyWithdrawHistoryDao, AdminUserDao, CollectionBoxDao, CollectionNFTDao, NFTDao, SignatureLogsDao
 
-__models__ = ['ReferralModel', 'ReferralLogModel', 'LeaderBoardModel', 'UserModel']
+__models__ = ['ReferralModel', 'ReferralLogModel', 'LeaderBoardModel', 'UserModel', 
+        'RoyaltyModel', 'RoyaltyWithdrawHistoryModel', 'AdminUserModel', 'CollectionBoxModel', 'CollectionNFTModel',
+        'NFTModel', 'SignatureLogsModel'
+]
 
 ReferralModel = DaoModel(connect_db.db.referral, redis=redis_cluster, broker=Config.BROKER_URL,
                           project=Config.PROJECT)
@@ -35,3 +39,25 @@ EventModel = DaoModel(connect_db.db.events, redis=redis_cluster)
 PointModel = PointDao(connect_db.db.points, redis=redis_cluster)
 
 SettingModel = DaoModel(connect_db.db.setting, redis=redis_cluster)
+
+RoyaltyModel = DaoModel(connect_db.db.royalty, redis=redis_cluster, broker=Config.BROKER_URL,
+                          project=Config.PROJECT)
+
+RoyaltyWithdrawHistoryModel = DaoModel(connect_db.db.royalty_withdraw_history, redis=redis_cluster, broker=Config.BROKER_URL,
+                          project=Config.PROJECT)
+
+AdminUserModel = DaoModel(connect_db.db.admin_users, redis=redis_cluster, broker=Config.BROKER_URL,
+                project=Config.PROJECT)
+
+CollectionBoxModel = DaoModel(connect_db.db.boxes, redis=redis_cluster, broker=Config.BROKER_URL,
+                project=Config.PROJECT)
+
+CollectionNFTModel = DaoModel(connect_db.db.collection, redis=redis_cluster, broker=Config.BROKER_URL,
+                project=Config.PROJECT)
+
+NFTModel = DaoModel(connect_db.db.nfts, redis=redis_cluster)
+
+SignatureLogsModel = DaoModel(connect_db.db.signature_logs, redis=redis_cluster)
+
+
+
