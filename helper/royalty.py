@@ -87,13 +87,13 @@ class RoyaltyHelper:
             """
                 Withdrawal History of all in the system
             """
-            _history_withdraw = RoyaltyWithdrawHistoryModel.find({}).sort("block_time", -1).limit(withdraw_history_length)
+            _withdraw_history = RoyaltyWithdrawHistoryModel.find({}).sort("block_time", -1).limit(withdraw_history_length)
             
         else:
             """
                 Withdrawal History of current royalty user
             """
-            _history_withdraw = RoyaltyWithdrawHistoryModel.find({
+            _withdraw_history = RoyaltyWithdrawHistoryModel.find({
                 'address': address
             }).sort("block_time", -1).limit(withdraw_history_length)
 
@@ -225,7 +225,7 @@ class RoyaltyHelper:
                     _res_nft['royalty'] = get(_royalty, "balances")
                 _collection_nft.append(_res_nft)
         _res = {
-            'histories_withdraw': _history_withdraw,
+            'withdraw_history': _withdraw_history,
             'collection_nft': _collection_nft,
             'collections_box': _collections_box,
             'is_admin': _is_admin
