@@ -21,8 +21,6 @@ class Royalty(Resource):
     )
     def get(self, params):
         _user_address = py_.get(params, 'address')
-        # return ""
-        # print(t)
-        res = RoyaltyHelper.get_all_collections_by_user(_user_address)
-        print(res)
+        _withdraw_history_length = py_.get(params, "withdraw_history_length")
+        res = RoyaltyHelper.get_all_collections_by_user(_user_address, _withdraw_history_length)
         return res

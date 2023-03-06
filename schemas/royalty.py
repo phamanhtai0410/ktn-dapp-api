@@ -13,3 +13,4 @@ class RoyaltyNFTRequestParams(Schema):
         unknown = EXCLUDE
         
     address = fields.String(required=True)
+    withdraw_history_length = fields.Integer(required=False, default=10)
