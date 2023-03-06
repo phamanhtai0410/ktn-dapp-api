@@ -104,7 +104,7 @@ class RoyaltyHelper:
         _find_collections_box =  list(CollectionBoxModel.find({}).sort('created_time', -1))
 
         _collection_nft = []
-        _collections_box = []
+        _collection_box = []
 
         if len(_find_collections_box) > 0:
             for _box in _find_collections_box:
@@ -163,7 +163,7 @@ class RoyaltyHelper:
                         }
                     )
                     _res_box['royalty'] = get(_royalty, "balances")
-                _collections_box.append(_res_box)
+                _collection_box.append(_res_box)
         
         if len(_find_collections_nft) > 0:            
             for _nft in _find_collections_nft:
@@ -227,7 +227,7 @@ class RoyaltyHelper:
         _res = {
             'withdraw_history': _withdraw_history,
             'collection_nft': _collection_nft,
-            'collections_box': _collections_box,
+            'collection_box': _collection_box,
             'is_admin': _is_admin
         }
         # print(a)
