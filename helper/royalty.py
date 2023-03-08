@@ -167,6 +167,8 @@ class RoyaltyHelper:
         
         if len(_find_collections_nft) > 0:            
             for _nft in _find_collections_nft:
+                _name = _nft["name"]
+                print(f"NFT_{_name}")
                 _res_nft = {}
                 _res_nft['name'] = get(_nft, 'name')
                 if _is_admin:
@@ -193,7 +195,7 @@ class RoyaltyHelper:
                     _sum_price = list(_sum_primary_sale)
                     _res_nft['primary_sale'] = {
                         "symbol": Constants.ROYALTY_PRIMARY_SALES_TOKEN,
-                        "balance": _sum_price[0].get("total_value", 0)
+                        "balance": _sum_price[0].get("total_value", 0) if len(_sum_price) > 0 else 0
                     }
 
                     """
@@ -211,8 +213,7 @@ class RoyaltyHelper:
                         self.gen_query_project_royalty_fee(),
                         self.gen_group_royalty_fee()
                     ]))
-
-                    _res_nft['royalty'] = _sum_royalties[0]
+                    _res_nft['royalty'] = _sum_royalties[0] if len(_sum_royalties) else 0
                 else:
                     _res_nft['total_income'] = 0
                     _res_nft['primary_sale'] = 0
