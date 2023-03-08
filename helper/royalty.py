@@ -15,6 +15,8 @@ from lib.utils import dt_utcnow
 from config import Config
 from bson.json_util import dumps
 import json
+from connect import redis_cluster
+
 
 db = MongoClient(Config.MONGO_URI, connect=False)['katana-dapp']
 
@@ -28,6 +30,22 @@ SignatureLogsModel = db['signature_logs']
 
 
 class RoyaltyHelper:
+    @staticmethod
+    def price_key(_token_symbol):
+        return f"katana-dapp.price_cmc/{_token_symbol.lower()}"
+    
+    @classmethod
+    def sum_royalty(self, _royalty_obj):
+        if not type(_royalty_obj) == 'dict':
+            return 0
+
+        _sum = 0
+        for key, value in _royalty_obj.items():
+            _price = redis_cluster.get(self.price_key(key))
+            _sum += int(key) * int(_price)
+        
+        return _sum
+
     @staticmethod
     def gen_query_project_royalty_fee():
         _dict = {
@@ -134,7 +152,7 @@ class RoyaltyHelper:
                     _sum_price = list(_sum_primary_sale)
                     _res_box['primary_sale'] = {
                         "symbol": Constants.ROYALTY_PRIMARY_SALES_TOKEN,
-                        "balance": _sum_price[0].get("total_value", 0)
+                        "balance": _sum_price[0].get("total_value", 0) if len(_sum_price) > 0 else 0
                     }
                     
                     """
@@ -152,7 +170,9 @@ class RoyaltyHelper:
                         self.gen_query_project_royalty_fee(),
                         self.gen_group_royalty_fee()
                     ]))
-                    _res_box['royalty'] = _sum_royalties[0]
+
+                    _res_box['royalty'] = self.sum_royalty(_sum_royalties[0] if len(_sum_royalties) else 0)
+                    _res_box['total_income'] = _res_box['primary_sale']['balance'] + _res_box['royalty']
                 else:
                     _res_box['total_income'] = 0
                     _res_box['primary_sale'] = 0
@@ -162,13 +182,12 @@ class RoyaltyHelper:
                             "user_address": address
                         }
                     )
-                    _res_box['royalty'] = get(_royalty, "balances")
+                    _res_box['royalty'] = self.sum_royalty(get(_royalty, "balances"))
+                    _res_box['total_income'] = _res_box['royalty']
                 _collection_box.append(_res_box)
         
-        if len(_find_collections_nft) > 0:            
+        if len(_find_collections_nft) > 0:
             for _nft in _find_collections_nft:
-                _name = _nft["name"]
-                print(f"NFT_{_name}")
                 _res_nft = {}
                 _res_nft['name'] = get(_nft, 'name')
                 if _is_admin:
@@ -213,7 +232,8 @@ class RoyaltyHelper:
                         self.gen_query_project_royalty_fee(),
                         self.gen_group_royalty_fee()
                     ]))
-                    _res_nft['royalty'] = _sum_royalties[0] if len(_sum_royalties) else 0
+                    _res_nft['royalty'] = self.sum_royalty(_sum_royalties[0] if len(_sum_royalties) > 0 else 0)
+                    _res_nft['total_income'] = _res_nft['primary_sale']['balance'] + _res_nft['royalty']
                 else:
                     _res_nft['total_income'] = 0
                     _res_nft['primary_sale'] = 0
@@ -223,13 +243,20 @@ class RoyaltyHelper:
                             "user_address": address
                         }
                     )
-                    _res_nft['royalty'] = get(_royalty, "balances")
+                    _res_nft['royalty'] = self.sum_royalty(get(_royalty, "balances"))
+                    _res_nft['total_income'] = _res_nft['royalty']
                 _collection_nft.append(_res_nft)
+        _overview = {
+            'total_income': sum([_item['total_income'] for _item in _collection_nft]) + sum([_item['total_income'] for _item in _collection_box]),
+            'total_royalty': sum([_item['royalty'] for _item in _collection_nft]) + sum([_item['royalty'] for _item in _collection_box]),
+            'total_primary_sale': sum([_item['primary_sale']['balance'] for _item in _collection_nft]) + sum([_item['primary_sale']['balance'] for _item in _collection_box])
+        }
         _res = {
             'withdraw_history': _withdraw_history,
             'collection_nft': _collection_nft,
             'collection_box': _collection_box,
-            'is_admin': _is_admin
+            'is_admin': _is_admin,
+            'overview': _overview
         }
         # print(a)
         _res = json.loads(dumps(_res))
