@@ -39,3 +39,7 @@ class Config:
     REDIS_CLUSTER = json.loads(os.getenv('REDIS_CLUSTER'))
     WALLET_IAPI = os.getenv('WALLET_IAPI')
     REDLOCK_REDIS = json.loads(os.getenv('REDLOCK_REDIS', '[]'))
+
+    # BASE TOKEN ADDRESS
+    TOKEN_USDT = os.getenv("TOKEN_USDT")
+    TOKEN_WBNB = os.getenv("TOKEN_WBNB")

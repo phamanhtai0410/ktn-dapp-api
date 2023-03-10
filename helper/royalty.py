@@ -16,6 +16,7 @@ from config import Config
 from bson.json_util import dumps
 import json
 from connect import redis_cluster
+from config import Config
 
 
 db = MongoClient(Config.MONGO_URI, connect=False)['katana-dapp']
@@ -256,7 +257,11 @@ class RoyaltyHelper:
             'collection_nft': _collection_nft,
             'collection_box': _collection_box,
             'is_admin': _is_admin,
-            'overview': _overview
+            'overview': _overview,
+            'token_address': [
+                "wBNB": Config.TOKEN_WBNB,
+                "USDT": Config.TOKEN_USDT
+            ]
         }
         # print(a)
         _res = json.loads(dumps(_res))
