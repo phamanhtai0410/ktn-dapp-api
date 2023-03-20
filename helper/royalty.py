@@ -291,10 +291,18 @@ class RoyaltyHelper:
             'collection_box': _collection_box,
             'is_admin': _is_admin,
             'overview': _overview,
-            'token_address': {
-                "wBNB": Config.TOKEN_WBNB,
-                "USDT": Config.TOKEN_USDT
-            }
+            'token_address': [
+                {
+                    "symbol": "wBNB",
+                    "address": Config.TOKEN_WBNB,
+                    "digist": 18
+                },
+                {
+                    "symbool": "USDT",
+                    "address": Config.TOKEN_USDT,
+                    "digist": 6
+                }
+            ]
         }
         # print(a)
         _res = json.loads(dumps(_res))
