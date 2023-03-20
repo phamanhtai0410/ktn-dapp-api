@@ -162,7 +162,7 @@ class RoyaltyHelper:
                     _sum_royalties = list(RoyaltyModel.aggregate([
                         {
                             "$match": {
-                                "collection_address": get(_box, "collection")
+                                "collection_address": get(_box, "address")
                             }
                         },
                         {
@@ -172,14 +172,29 @@ class RoyaltyHelper:
                         self.gen_group_royalty_fee()
                     ]))
 
-                    _res_box['royalty'] = self.sum_royalty(_sum_royalties[0] if len(_sum_royalties) else 0)
-                    _res_box['total_income'] = _res_box['primary_sale']['balance'] + _res_box['royalty']
+                    # List royalty by currency
+                    _list_royalties = get(RoyaltyModel.find_one({
+                        "collection_address": get(_box, "address")
+                    }), "balances", [
+                        {
+                            "symbol": _token,
+                            "balance": 0
+                        }
+                        for _token in Constants.ROYALTY_FEE_TOKENS_LIST
+                    ])
+
+                    _res_box['royalty'] = {
+                        "sum": self.sum_royalty(_sum_royalties[0] if len(_sum_royalties) else 0),
+                        "details": _list_royalties
+                    }
+                    
+                    _res_box['total_income'] = _res_box['primary_sale']['balance'] + _res_box['royalty']['sum']
                 else:
                     _res_box['total_income'] = 0
                     _res_box['primary_sale'] = 0
                     _royalty = RoyaltyModel.find_one(
                         filter={
-                            "collection_address": get(_box, "collection"),
+                            "collection_address": get(_box, "address"),
                             "user_address": address
                         }
                     )
@@ -233,8 +248,24 @@ class RoyaltyHelper:
                         self.gen_query_project_royalty_fee(),
                         self.gen_group_royalty_fee()
                     ]))
-                    _res_nft['royalty'] = self.sum_royalty(_sum_royalties[0] if len(_sum_royalties) > 0 else 0)
-                    _res_nft['total_income'] = _res_nft['primary_sale']['balance'] + _res_nft['royalty']
+
+                    # List royalty by currency
+                    _list_royalties = get(RoyaltyModel.find_one({
+                        "collection_address": get(_nft, "address")
+                    }), "balances", [
+                        {
+                            "symbol": _token,
+                            "balance": 0
+                        }
+                        for _token in Constants.ROYALTY_FEE_TOKENS_LIST
+                    ])
+
+                    _res_nft['royalty'] = {
+                        "sum": self.sum_royalty(_sum_royalties[0] if len(_sum_royalties) > 0 else 0),
+                        "details": _list_royalties
+                    }
+
+                    _res_nft['total_income'] = _res_nft['primary_sale']['balance'] + _res_nft['royalty']['sum']
                 else:
                     _res_nft['total_income'] = 0
                     _res_nft['primary_sale'] = 0
@@ -247,11 +278,13 @@ class RoyaltyHelper:
                     _res_nft['royalty'] = self.sum_royalty(get(_royalty, "balances"))
                     _res_nft['total_income'] = _res_nft['royalty']
                 _collection_nft.append(_res_nft)
+
         _overview = {
             'total_income': sum([_item['total_income'] for _item in _collection_nft]) + sum([_item['total_income'] for _item in _collection_box]),
-            'total_royalty': sum([_item['royalty'] for _item in _collection_nft]) + sum([_item['royalty'] for _item in _collection_box]),
+            'total_royalty': sum([_item['royalty']['sum'] for _item in _collection_nft]) + sum([_item['royalty']['sum'] for _item in _collection_box]),
             'total_primary_sale': sum([_item['primary_sale']['balance'] for _item in _collection_nft]) + sum([_item['primary_sale']['balance'] for _item in _collection_box])
         }
+
         _res = {
             'withdraw_history': _withdraw_history,
             'collection_nft': _collection_nft,
