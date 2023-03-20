@@ -129,6 +129,7 @@ class RoyaltyHelper:
             for _box in _find_collections_box:
                 _res_box = {}
                 _res_box['name'] = get(_box, 'name')
+                _res_box['address'] = get(_box, 'address')
                 if _is_admin:
 
                     """
@@ -206,6 +207,7 @@ class RoyaltyHelper:
             for _nft in _find_collections_nft:
                 _res_nft = {}
                 _res_nft['name'] = get(_nft, 'name')
+                _res_nft['address'] = get(_nft, 'address')
                 if _is_admin:
 
                     """
