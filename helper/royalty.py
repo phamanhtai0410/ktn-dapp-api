@@ -300,7 +300,7 @@ class RoyaltyHelper:
                     "digist": 18
                 },
                 {
-                    "symbool": "USDT",
+                    "symbol": "USDT",
                     "address": Config.TOKEN_USDT,
                     "digist": 6
                 }
