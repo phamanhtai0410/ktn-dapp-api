@@ -201,6 +201,7 @@ class RoyaltyHelper:
                     )
                     _res_box['royalty'] = self.sum_royalty(get(_royalty, "balances"))
                     _res_box['total_income'] = _res_box['royalty']
+                _res_box['address'] = get(_box, 'address')
                 _collection_box.append(_res_box)
         
         if len(_find_collections_nft) > 0:
@@ -279,6 +280,7 @@ class RoyaltyHelper:
                     )
                     _res_nft['royalty'] = self.sum_royalty(get(_royalty, "balances"))
                     _res_nft['total_income'] = _res_nft['royalty']
+                _res_nft['address'] = get(_nft, 'address')
                 _collection_nft.append(_res_nft)
 
         _overview = {
