@@ -11,7 +11,9 @@ class AllsItemHelper:
     @staticmethod
     def get_by_filter(params={}):
         print(params)
-        _filter = {}
+        _filter = {
+            'deployed': True
+        }
         if get(params, 'chain'):
             _filter['chain'] = get(params, 'chain')
         if get(params, 'category'):
@@ -57,7 +59,9 @@ class AllsItemHelper:
     
     @staticmethod
     def get_one_by_filter(params={}):
-        _filter = {}
+        _filter = {
+            'deployed': True
+        }
         _address = get(params, 'address').lower()
         _filter["address"] = _address
         if get(params, 'chain'):
