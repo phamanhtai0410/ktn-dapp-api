@@ -16,7 +16,7 @@ from resources.referral_sign_message import ReferralSignMessageResource
 from resources.payment import Payment
 from resources.setting import SettingResource
 from resources.royalty import Royalty
-from resources.alls import AllsItemResource
+from resources.alls import AllsItemResource, OneItemResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -32,5 +32,6 @@ api_resources = {
     '/payment': Payment,
     '/setting': SettingResource,
     '/royalty_info': Royalty,
-    '/alls': AllsItemResource
+    '/alls': AllsItemResource,
+    '/nft/detail': OneItemResource
 }

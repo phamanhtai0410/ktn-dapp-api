@@ -41,3 +41,22 @@ class AllsItemRequestParams(Schema):
     category = fields.String(allow_none=True, default='Character')
     page = fields.Int(default=1, missing=1)
     page_size = fields.Int(default=10, missing=10)
+    
+
+class OneItemRequestParams(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+    
+    
+    address = fields.String(required=True)
+    chain = fields.String(allow_none=True, default='BSC')
+    category = fields.String(allow_none=True, default='Character')
+    
+
+
+class OneItemResponse(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+    items = fields.List(fields.Nested(Item), default=[], missing=[])
