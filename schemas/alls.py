@@ -13,6 +13,7 @@ class Item(Schema):
         unknown = EXCLUDE
         ordered = True
 
+    nft_id = fields.Integer()
     name = fields.String()
     price = fields.Float()
     image = fields.String()
