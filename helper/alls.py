@@ -4,7 +4,7 @@
         -
         -
 """
-from models import CollectionNFTModel, CollectionBoxModel
+from models import CollectionNFTModel, CollectionBoxModel, NFTModel
 from pydash import get
 
 class AllsItemHelper:
@@ -38,6 +38,9 @@ class AllsItemHelper:
                 if get(_collection, 'address'):
                     _types_list = get(_collection, 'types_list')
                     for (_idx, _type) in enumerate(_types_list):
+                        _total_minted = NFTModel.col.count_documents({
+                            'contract': get(_collection, 'address')
+                        })
                         _items.append({
                             'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
                             'name': get(_collection, 'name'),
@@ -47,7 +50,8 @@ class AllsItemHelper:
                             'total_supply': get(_collection, 'total_supply', 0),
                             'address': get(_collection, 'address'),
                             'chain': get(_collection, 'chain'),
-                            'chain_id': get(_collection, 'chain_id')
+                            'chain_id': get(_collection, 'chain_id'),
+                            'total_minted': _total_minted
                         })
 
         _result = {
@@ -91,6 +95,9 @@ class AllsItemHelper:
             # NOTE: nft_id is idx of nft in types_list
             if _nft_id is not None:
                 _nft = get(_types_list, f'{_nft_id}', None)
+                _total_minted = NFTModel.col.count_documents({
+                    'contract': _address
+                })
                 _items = [{
                     'nft_id': _nft_id, # NOTE: this nft_id is index of nft in collection for mint
                     'name': get(_collections, 'name'),
@@ -100,10 +107,14 @@ class AllsItemHelper:
                     'total_supply': get(_collections, 'total_supply', 0),
                     'address': get(_collections, 'address'),
                     'chain': get(_collections, 'chain'),
-                    'chain_id': get(_collections, 'chain_id')
+                    'chain_id': get(_collections, 'chain_id'),
+                    'total_minted': _total_minted
                 }] if _nft else []
             else:
                 for (_idx, _type) in enumerate(_types_list):
+                    _total_minted = NFTModel.col.count_documents({
+                        'contract': _address
+                    })
                     _items.append({
                         'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
                         'name': get(_collections, 'name'),
@@ -113,7 +124,8 @@ class AllsItemHelper:
                         'total_supply': get(_collections, 'total_supply', 0),
                         'address': get(_collections, 'address'),
                         'chain': get(_collections, 'chain'),
-                        'chain_id': get(_collections, 'chain_id')
+                        'chain_id': get(_collections, 'chain_id'),
+                        'total_minted': _total_minted
                     })
 
         _result = {

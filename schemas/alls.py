@@ -22,6 +22,7 @@ class Item(Schema):
     address = fields.String()
     chain = fields.String()
     chain_id = fields.Integer()
+    total_minted = fields.Integer(default=0)
 
 
 class AllsItemResponse(Schema):
