@@ -22,6 +22,8 @@ class Item(Schema):
     address = fields.String()
     chain = fields.String()
     chain_id = fields.Integer()
+    dapp_creator_address = fields.String(allow_none=True)
+    pay_token_address = fields.String(allow_none=True)
     total_minted = fields.Integer(default=0)
 
 
@@ -41,8 +43,8 @@ class AllsItemRequestParams(Schema):
         unknown = EXCLUDE
         ordered = True
     
-    chain = fields.String(allow_none=True, default='BSC')
-    category = fields.String(allow_none=True, default='Character')
+    chain = fields.String(allow_none=True)
+    category = fields.String(allow_none=True)
     page = fields.Int(default=1, missing=1)
     page_size = fields.Int(default=10, missing=10)
     

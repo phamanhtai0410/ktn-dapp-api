@@ -51,7 +51,9 @@ class AllsItemHelper:
                             'address': get(_collection, 'address'),
                             'chain': get(_collection, 'chain'),
                             'chain_id': get(_collection, 'chain_id'),
-                            'total_minted': _total_minted
+                            'total_minted': _total_minted,
+                            'pay_token_address': get(_collection, 'pay_token_address'),
+                            'dapp_creator_address': get(_collection, 'dapp_creator_address'),
                         })
 
         _result = {
@@ -108,7 +110,9 @@ class AllsItemHelper:
                     'address': get(_collections, 'address'),
                     'chain': get(_collections, 'chain'),
                     'chain_id': get(_collections, 'chain_id'),
-                    'total_minted': _total_minted
+                    'total_minted': _total_minted,
+                    'pay_token_address': get(_collections, 'pay_token_address'),
+                    'dapp_creator_address': get(_collections, 'dapp_creator_address'),
                 }] if _nft else []
             else:
                 for (_idx, _type) in enumerate(_types_list):
@@ -125,7 +129,9 @@ class AllsItemHelper:
                         'address': get(_collections, 'address'),
                         'chain': get(_collections, 'chain'),
                         'chain_id': get(_collections, 'chain_id'),
-                        'total_minted': _total_minted
+                        'total_minted': _total_minted,
+                        'pay_token_address': get(_collections, 'pay_token_address'),
+                        'dapp_creator_address': get(_collections, 'dapp_creator_address'),
                     })
 
         _result = {
