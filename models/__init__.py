@@ -59,5 +59,5 @@ NFTModel = DaoModel(connect_db.db.nfts, redis=redis_cluster)
 
 SignatureLogsModel = DaoModel(connect_db.db.signature_logs, redis=redis_cluster)
 
-
+AdminDefaultConfigsModel = DaoModel(connect_db.db.admin_default_configs, redis=redis_cluster)
 

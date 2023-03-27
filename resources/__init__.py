@@ -17,6 +17,7 @@ from resources.payment import Payment
 from resources.setting import SettingResource
 from resources.royalty import Royalty
 from resources.alls import AllsItemResource, OneItemResource
+from resources.admin_config import AdminConfigResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -33,5 +34,7 @@ api_resources = {
     '/setting': SettingResource,
     '/royalty_info': Royalty,
     '/alls': AllsItemResource,
-    '/nft/detail': OneItemResource
+    '/nft/detail': OneItemResource,
+    '/config': AdminConfigResource,
+    
 }
