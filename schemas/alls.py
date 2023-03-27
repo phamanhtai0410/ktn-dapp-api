@@ -53,7 +53,7 @@ class OneItemRequestParams(Schema):
     address = fields.String(required=True)
     chain = fields.String(allow_none=True, default='BSC')
     category = fields.String(allow_none=True, default='Character')
-    
+    nft_id = fields.Integer(allow_none=True)
 
 
 class OneItemResponse(Schema):

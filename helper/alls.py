@@ -68,7 +68,8 @@ class AllsItemHelper:
             _filter['chain'] = get(params, 'chain')
         if get(params, 'category'):
             _filter['category'] = get(params, 'category')
-        _collections = CollectionNFTModel.find(filter=_filter)
+        _collections = CollectionNFTModel.find_one(filter=_filter)
+        _nft_id = get(params, 'nft_id', None)
         # _boxes = list(CollectionBoxModel.find(filter=_filter))
         _items = []
         # if len(_boxes):
@@ -83,20 +84,32 @@ class AllsItemHelper:
         #                 'address': get(_box, 'address')
         #             })
 
-        if len(_collections):
-            for _collection in _collections:
-                if get(_collection, 'address'):
-                    _types_list = get(_collection, 'types_list')
-                    for (_idx, _type) in enumerate(_types_list):
-                        _items.append({
-                            'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
-                            'name': get(_collection, 'name'),
-                            'price': get(_type, 'price', 0),
-                            'image': get(_type, 'ImageUrl', ''),
-                            'rarity': get(_type, 'AssetRarity'),
-                            'total_supply': get(_collection, 'total_supply', 0),
-                            'address': get(_collection, 'address')
-                        })
+        if _collections:
+            _types_list = get(_collections, 'types_list', [])
+            # NOTE: nft_id is idx of nft in types_list
+            if _nft_id is not None:
+                _nft = get(_types_list, f'{_nft_id}', None)
+                _items = [{
+                    'nft_id': _nft_id, # NOTE: this nft_id is index of nft in collection for mint
+                    'name': get(_collections, 'name'),
+                    'price': get(_nft, 'price', 0),
+                    'image': get(_nft, 'ImageUrl', ''),
+                    'rarity': get(_nft, 'AssetRarity'),
+                    'total_supply': get(_collections, 'total_supply', 0),
+                    'address': get(_collections, 'address')
+                }] if _nft else []
+            else:
+                for (_idx, _type) in enumerate(_types_list):
+                    _items.append({
+                        'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
+                        'name': get(_collections, 'name'),
+                        'price': get(_type, 'price', 0),
+                        'image': get(_type, 'ImageUrl', ''),
+                        'rarity': get(_type, 'AssetRarity'),
+                        'total_supply': get(_collections, 'total_supply', 0),
+                        'address': get(_collections, 'address')
+                    })
+
         _result = {
             'items': _items,
         
