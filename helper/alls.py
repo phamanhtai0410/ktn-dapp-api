@@ -10,7 +10,6 @@ from pydash import get
 class AllsItemHelper:
     @staticmethod
     def get_by_filter(params={}):
-        print(params)
         _filter = {
             'deployed': True
         }
