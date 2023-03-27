@@ -20,6 +20,8 @@ class Item(Schema):
     rarity = fields.String()
     total_supply = fields.Int()
     address = fields.String()
+    chain = fields.String()
+    chain_id = fields.Integer()
 
 
 class AllsItemResponse(Schema):

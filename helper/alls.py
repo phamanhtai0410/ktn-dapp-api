@@ -45,7 +45,9 @@ class AllsItemHelper:
                             'image': get(_type, 'ImageUrl', ''),
                             'rarity': get(_type, 'AssetRarity'),
                             'total_supply': get(_collection, 'total_supply', 0),
-                            'address': get(_collection, 'address')
+                            'address': get(_collection, 'address'),
+                            'chain': get(_collections, 'chain'),
+                            'chain_id': get(_collections, 'chain_id')
                         })
 
         _result = {
@@ -96,7 +98,9 @@ class AllsItemHelper:
                     'image': get(_nft, 'ImageUrl', ''),
                     'rarity': get(_nft, 'AssetRarity'),
                     'total_supply': get(_collections, 'total_supply', 0),
-                    'address': get(_collections, 'address')
+                    'address': get(_collections, 'address'),
+                    'chain': get(_collections, 'chain'),
+                    'chain_id': get(_collections, 'chain_id')
                 }] if _nft else []
             else:
                 for (_idx, _type) in enumerate(_types_list):
@@ -107,7 +111,9 @@ class AllsItemHelper:
                         'image': get(_type, 'ImageUrl', ''),
                         'rarity': get(_type, 'AssetRarity'),
                         'total_supply': get(_collections, 'total_supply', 0),
-                        'address': get(_collections, 'address')
+                        'address': get(_collections, 'address'),
+                        'chain': get(_collections, 'chain'),
+                        'chain_id': get(_collections, 'chain_id')
                     })
 
         _result = {
