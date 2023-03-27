@@ -46,8 +46,8 @@ class AllsItemHelper:
                             'rarity': get(_type, 'AssetRarity'),
                             'total_supply': get(_collection, 'total_supply', 0),
                             'address': get(_collection, 'address'),
-                            'chain': get(_collections, 'chain'),
-                            'chain_id': get(_collections, 'chain_id')
+                            'chain': get(_collection, 'chain'),
+                            'chain_id': get(_collection, 'chain_id')
                         })
 
         _result = {
