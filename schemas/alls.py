@@ -7,6 +7,12 @@
 from marshmallow import Schema, EXCLUDE, fields
 
 
+class WhitelistTimeSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+    
+    start_time = fields.Integer(allow_none=True)
+    end_time = fields.Integer(allow_none=True)
 
 class Item(Schema):
     class Meta:
@@ -25,6 +31,9 @@ class Item(Schema):
     dapp_creator_address = fields.String(allow_none=True)
     pay_token_address = fields.String(allow_none=True)
     total_minted = fields.Integer(default=0)
+    whitelist = fields.Nested(WhitelistTimeSchema, default={}, missing={})
+    total_user_minted = fields.Integer(default=0, missing=0)
+    user_whitelist_amount = fields.Integer(default=0, missing=0)
 
 
 class AllsItemResponse(Schema):
@@ -56,9 +65,10 @@ class OneItemRequestParams(Schema):
     
     
     address = fields.String(required=True)
-    chain = fields.String(allow_none=True, default='BSC')
-    category = fields.String(allow_none=True, default='Character')
+    chain = fields.String(allow_none=True)
+    category = fields.String(allow_none=True)
     nft_id = fields.Integer(allow_none=True)
+    user_address = fields.String(allow_none=True)
 
 
 class OneItemResponse(Schema):
