@@ -20,9 +20,9 @@ class AllsItemHelper:
         return py_.get(_nft_whitelist, 'amount', 0)
 
     @staticmethod
-    def get_user_minted_amount(collection, user_address):
+    def get_user_minted_amount(collection_address, user_address):
         _count = NFTModel.col.count_documents({
-            'contract': collection,
+            'contract': collection_address,
             'address': user_address
         })
 
@@ -50,6 +50,112 @@ class AllsItemHelper:
         return _whitelist
 
     @staticmethod
+    def get_collection_data(collection, nft_id=None, user_address=None):
+        _items = []
+        if not collection:
+            return _items
+
+        if get(collection, 'address') and get(collection, 'types_list'):
+            _total_user_minted = 0
+            _user_whitelist_amount = 0
+            if user_address:
+                _total_user_minted = AllsItemHelper.get_user_minted_amount(
+                    collection_address=get(collection, 'address'),
+                    user_address=user_address)
+                _user_whitelist_amount = AllsItemHelper.get_user_whitelist_amount(
+                    collection=get(collection, 'address'),
+                    user_address=user_address)
+
+            _types_list = get(collection, 'types_list')
+            _is_box = get(collection, 'is_box')
+            _whitelist = AllsItemHelper.get_whitelist_time(collection=collection)
+            _nft_info = {
+                'nft_id': 0, # NOTE: if collection mint like box only need index 0
+                'name': get(collection, 'name'),
+                'address': get(collection, 'address'),
+                'chain': get(collection, 'chain'),
+                'chain_id': get(collection, 'chain_id'),
+                'pay_token_address': get(collection, 'pay_token_address'),
+                'dapp_creator_address': get(collection, 'dapp_creator_address'),
+                'whitelist': _whitelist,
+                'total_user_minted': _total_user_minted,
+                'user_whitelist_amount': _user_whitelist_amount
+            }
+            if _is_box:
+                _total_minted = NFTModel.col.count_documents({
+                    'contract': get(collection, 'address')
+                })
+                _items.append({
+                    **_nft_info,
+                    'nft_id': 0, # NOTE: if collection mint like box only need index 0
+                    'price': get(_types_list, '0.price', 0), # NOTE: if box will get same price from first nft
+                    'image': get(collection, 'box_image_url', ''),
+                    'rarity': get(_types_list, '0.AssetRarity'),
+                    'total_supply': get(collection, 'total_supply', 0),
+                    'total_minted': _total_minted,
+                })
+            elif nft_id is not None:
+                _nft = get(_types_list, f'{nft_id}', None)
+                _count_filter = {
+                    'contract': get(collection, 'address')
+                }
+                if not _is_box:
+                    _count_filter = {
+                        **_count_filter,
+                        'nft_index': nft_id
+                    }
+                _total_minted = NFTModel.col.count_documents(_count_filter)
+
+                _items = [{
+                    **_nft_info,
+                    'nft_id': nft_id, # NOTE: this nft_id is index of nft in collection for mint
+                    'price': get(_nft, 'price', 0),
+                    'image': get(_nft, 'ImageUrl', '') if not _is_box else get(collection, 'box_image_url'),
+                    'rarity': get(_nft, 'AssetRarity'),
+                    'total_supply': int(get(collection, 'total_supply', 0) if not _is_box else get(collection, 'total_supply') * get(_nft, 'rate') / 100),
+                    'total_minted': _total_minted,
+                }] if _nft else []
+
+            else:
+                for (_idx, _type) in enumerate(_types_list):
+                    _total_minted = NFTModel.col.count_documents({
+                        'contract': get(collection, 'address'),
+                        'nft_index': _idx  #NOTE: if not type box -> supply will by each nft rate
+                    })
+                    _items.append({
+                        **_nft_info,
+                        'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
+                        'price': get(_type, 'price', 0),
+                        'image': get(_type, 'ImageUrl', ''),
+                        'rarity': get(_type, 'AssetRarity'),
+                        'total_supply': int(get(collection, 'total_supply', 0) * get(_type, 'rate') / 100),
+                        'total_minted': _total_minted,
+                    })
+
+        return _items
+
+    @staticmethod
+    def paging(data, page, page_size):
+
+        _offset = page_size * (page - 1)
+        _limit = (int(page * page_size))
+        _offset = int(_limit - page_size)
+
+        _data = data[_offset:_limit]
+        _num_of_page = (len(data) / page_size)
+        if (len(data) % page_size) > 0:
+            _num_of_page = _num_of_page + 1
+
+        _result = {
+            'items': _data,
+            'num_of_page': _num_of_page,
+            'page_size': page_size,
+            'page': page
+        }
+
+        return _result
+
+    @staticmethod
     def get_by_filter(params={}):
         _filter = {
             'deployed': True
@@ -59,51 +165,23 @@ class AllsItemHelper:
         if get(params, 'category'):
             _filter['category'] = get(params, 'category')
         _collections = list(CollectionNFTModel.find(filter=_filter))
-        # _boxes = list(CollectionBoxModel.find(filter=_filter))
         _items = []
-        # if len(_boxes):
-        #     for _box in _boxes:
-        #         if get(_box, 'address'):
-        #             _items.append({
-        #                 'name': get(_box, 'name'),
-        #                 'price': get(_box, 'price', 0),
-        #                 'image': get(_box, 'image', ''),
-        #                 'rarity': 'LOOTBOX',
-        #                 'total_supply': get(_box, 'total_supply', 0),
-        #                 'address': get(_box, 'address')
-        #             })
-
         if len(_collections):
             for _collection in _collections:
-                if get(_collection, 'address'):
-                    _types_list = get(_collection, 'types_list')
-                    _whitelist = AllsItemHelper.get_whitelist_time(collection=_collection)
-                    for (_idx, _type) in enumerate(_types_list):
-                        _total_minted = NFTModel.col.count_documents({
-                            'contract': get(_collection, 'address')
-                        })
-                        _items.append({
-                            'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
-                            'name': get(_collection, 'name'),
-                            'price': get(_type, 'price', 0),
-                            'image': get(_type, 'ImageUrl', ''),
-                            'rarity': get(_type, 'AssetRarity'),
-                            'total_supply': get(_collection, 'total_supply', 0),
-                            'address': get(_collection, 'address'),
-                            'chain': get(_collection, 'chain'),
-                            'chain_id': get(_collection, 'chain_id'),
-                            'total_minted': _total_minted,
-                            'pay_token_address': get(_collection, 'pay_token_address'),
-                            'dapp_creator_address': get(_collection, 'dapp_creator_address'),
-                            'whitelist': _whitelist
-                        })
+                _collection_data = AllsItemHelper.get_collection_data(collection=_collection)
+                _items = [
+                    *_items,
+                    *_collection_data
+                ]
 
-        _result = {
-            'items': _items,
-            'num_of_page': 0,
-            'page_size': get(params, 'page_size'),
-            'page': 0
-        }
+        _page = get(params, 'page')
+        _page_size = get(params, 'page_size')
+        
+        _result = AllsItemHelper.paging(
+            data=_items,
+            page=_page,
+            page_size=_page_size
+        )
         # print("Result = ", _result)
         return _result or {}
     
@@ -126,80 +204,11 @@ class AllsItemHelper:
             }
 
         _nft_id = get(params, 'nft_id', None)
-        # _boxes = list(CollectionBoxModel.find(filter=_filter))
-        _items = []
-        # if len(_boxes):
-        #     for _box in _boxes:
-        #         if get(_box, 'address'):
-        #             _items.append({
-        #                 'name': get(_box, 'name'),
-        #                 'price': get(_box, 'price', 0),
-        #                 'image': get(_box, 'image', ''),
-        #                 'rarity': 'LOOTBOX',
-        #                 'total_supply': get(_box, 'total_supply', 0),
-        #                 'address': get(_box, 'address')
-        #             })
-        _total_user_minted = 0
-        _user_whitelist_amount = 0
-        if _user_address:
-            _total_user_minted = AllsItemHelper.get_user_minted_amount(
-                collection=_address,
-                user_address=_user_address
-            )
-            _user_whitelist_amount = AllsItemHelper.get_user_whitelist_amount(
-                collection=_address,
-                user_address=_user_address
-            )
-
-        if _collections:
-            _whitelist = AllsItemHelper.get_whitelist_time(collection=_collections)
-            _types_list = get(_collections, 'types_list', [])
-            # NOTE: nft_id is idx of nft in types_list
-            if _nft_id is not None:
-                _nft = get(_types_list, f'{_nft_id}', None)
-                _total_minted = NFTModel.col.count_documents({
-                    'contract': _address
-                })
-
-                _items = [{
-                    'nft_id': _nft_id, # NOTE: this nft_id is index of nft in collection for mint
-                    'name': get(_collections, 'name'),
-                    'price': get(_nft, 'price', 0),
-                    'image': get(_nft, 'ImageUrl', ''),
-                    'rarity': get(_nft, 'AssetRarity'),
-                    'total_supply': get(_collections, 'total_supply', 0),
-                    'address': get(_collections, 'address'),
-                    'chain': get(_collections, 'chain'),
-                    'chain_id': get(_collections, 'chain_id'),
-                    'total_minted': _total_minted,
-                    'pay_token_address': get(_collections, 'pay_token_address'),
-                    'dapp_creator_address': get(_collections, 'dapp_creator_address'),
-                    'whitelist': _whitelist,
-                    'total_user_minted': _total_user_minted,
-                    'user_whitelist_amount': _user_whitelist_amount
-                }] if _nft else []
-            else:
-                for (_idx, _type) in enumerate(_types_list):
-                    _total_minted = NFTModel.col.count_documents({
-                        'contract': _address
-                    })
-                    _items.append({
-                        'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
-                        'name': get(_collections, 'name'),
-                        'price': get(_type, 'price', 0),
-                        'image': get(_type, 'ImageUrl', ''),
-                        'rarity': get(_type, 'AssetRarity'),
-                        'total_supply': get(_collections, 'total_supply', 0),
-                        'address': get(_collections, 'address'),
-                        'chain': get(_collections, 'chain'),
-                        'chain_id': get(_collections, 'chain_id'),
-                        'total_minted': _total_minted,
-                        'pay_token_address': get(_collections, 'pay_token_address'),
-                        'dapp_creator_address': get(_collections, 'dapp_creator_address'),
-                        'whitelist': _whitelist,
-                        'total_user_minted': _total_user_minted,
-                        'user_whitelist_amount': _user_whitelist_amount
-                    })
+        _items = AllsItemHelper.get_collection_data(
+            collection=_collections,
+            nft_id=_nft_id,
+            user_address=_user_address
+        )
 
         _result = {
             'items': _items,
