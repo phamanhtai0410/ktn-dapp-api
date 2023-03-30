@@ -36,5 +36,4 @@ api_resources = {
     '/alls': AllsItemResource,
     '/nft/detail': OneItemResource,
     '/config': AdminConfigResource,
-    
 }

@@ -157,6 +157,7 @@ class AllsItemHelper:
 
     @staticmethod
     def get_by_filter(params={}):
+        _now = dt_utcnow().timestamp()
         _filter = {
             'deployed': True
         }
@@ -164,6 +165,10 @@ class AllsItemHelper:
             _filter['chain'] = get(params, 'chain')
         if get(params, 'category'):
             _filter['category'] = get(params, 'category')
+        if get(params, 'is_live') and get(params, 'is_live') == True:
+            _filter['whitelist_time.start_time'] = {
+                "$lt": _now
+            }
         _collections = list(CollectionNFTModel.find(filter=_filter))
         _items = []
         if len(_collections):
