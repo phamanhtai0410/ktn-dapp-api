@@ -165,7 +165,7 @@ class AllsItemHelper:
             _filter['chain'] = get(params, 'chain')
         if get(params, 'category'):
             _filter['category'] = get(params, 'category')
-        if get(params, 'is_live') and get(params, 'is_live') == True:
+        if get(params, 'state') and get(params, 'state') == 'current_live':
             _filter['whitelist_time.start_time'] = {
                 "$lt": _now
             }
@@ -174,10 +174,15 @@ class AllsItemHelper:
         if len(_collections):
             for _collection in _collections:
                 _collection_data = AllsItemHelper.get_collection_data(collection=_collection)
-                _items = [
-                    *_items,
-                    *_collection_data
-                ]
+                if get(params, 'state') and get(params, 'state') == 'last_sold_out':
+                    for _i in _collection_data:
+                        if get(_i, 'total_minted') == get(_i, 'total_supply'):
+                            _items.append(_i)
+                else:
+                    _items = [
+                        *_items,
+                        *_collection_data
+                    ]
 
         _page = get(params, 'page')
         _page_size = get(params, 'page_size')
@@ -187,7 +192,7 @@ class AllsItemHelper:
             page=_page,
             page_size=_page_size
         )
-        # print("Result = ", _result)
+
         return _result or {}
     
     @staticmethod

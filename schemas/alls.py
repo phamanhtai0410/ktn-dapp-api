@@ -4,7 +4,7 @@
         -
         -
 """
-from marshmallow import Schema, EXCLUDE, fields
+from marshmallow import Schema, EXCLUDE, fields, validate
 
 
 class WhitelistTimeSchema(Schema):
@@ -54,7 +54,10 @@ class AllsItemRequestParams(Schema):
     
     chain = fields.String(allow_none=True)
     category = fields.String(allow_none=True)
-    is_live = fields.Boolean(allow_none=True)
+    state = fields.Str(allow_none=True, validate=validate.OneOf([
+        'current_live',
+        'last_sold_out'
+    ]))
     page = fields.Int(default=1, missing=1)
     page_size = fields.Int(default=10, missing=10)
     
