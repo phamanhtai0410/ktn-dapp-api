@@ -80,3 +80,29 @@ class OneItemResponse(Schema):
         unknown = EXCLUDE
         ordered = True
     items = fields.List(fields.Nested(Item), default=[], missing=[])
+
+
+class UpcomingRequestParams(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+
+    type = fields.Str(allow_none=False, validate=validate.OneOf([
+        'ingame_nfts',
+        'forging_nfts',
+        'tickets'
+    ]))
+    chain = fields.String(allow_none=True)
+    category = fields.String(allow_none=True)
+    page = fields.Int(default=1, missing=1)
+    page_size = fields.Int(default=10, missing=10)
+
+class UpcommingItemsResponse(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+    
+    items = fields.List(fields.Nested(Item), default=[], missing=[])
+    num_of_page = fields.Int(default=0, missing=0)
+    page_size = fields.Int(default=0, missing=0)
+    page = fields.Int(default=0, missing=0)

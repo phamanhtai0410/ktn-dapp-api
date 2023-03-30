@@ -8,7 +8,7 @@ from flask import request
 from flask_restful import Resource
 import pydash as py_
 from connect import security
-from schemas.alls import AllsItemRequestParams, AllsItemResponse, OneItemRequestParams, OneItemResponse
+from schemas.alls import AllsItemRequestParams, AllsItemResponse, OneItemRequestParams, OneItemResponse, UpcomingRequestParams, UpcommingItemsResponse
 from helper.alls import AllsItemHelper
 
 class AllsItemResource(Resource):
@@ -28,3 +28,12 @@ class OneItemResource(Resource):
     )
     def get(self, params):
         return AllsItemHelper.get_one_by_filter(params=params)
+    
+
+class UpcomingResource(Resource):
+    @security.http(
+            params=UpcomingRequestParams(),
+            response=UpcommingItemsResponse()
+    )
+    def get(self, params):
+        return AllsItemHelper.get_by_filter(params=params)
