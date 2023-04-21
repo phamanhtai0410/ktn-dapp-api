@@ -19,6 +19,7 @@ from resources.royalty import Royalty
 from resources.alls import AllsItemResource, OneItemResource, UpcomingResource
 from resources.admin_config import AdminConfigResource
 from resources.category import CategoryResource
+from resources.whitelist import WhitelistCheckingResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -38,5 +39,6 @@ api_resources = {
     '/nft/detail': OneItemResource,
     '/config': AdminConfigResource,
     '/category': CategoryResource,
-    '/alls/upcoming': UpcomingResource
+    '/alls/upcoming': UpcomingResource,
+    '/whitelist/check': WhitelistCheckingResource
 }

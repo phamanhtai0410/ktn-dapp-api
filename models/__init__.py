@@ -65,3 +65,5 @@ NftWhitelistModel = DaoModel(connect_db.db.nft_whitelist, redis=redis_cluster)
 
 CategoryModel = DaoModel(connect_db.db.collection_category, redis=redis_cluster)
 
+PreLaunchNftWhitelist = DaoModel(connect_db.db.pre_launch_nft_whitelist, redis=redis_cluster)
+
