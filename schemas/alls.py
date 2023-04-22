@@ -106,3 +106,11 @@ class UpcommingItemsResponse(Schema):
     num_of_page = fields.Int(default=0, missing=0)
     page_size = fields.Int(default=0, missing=0)
     page = fields.Int(default=0, missing=0)
+    
+
+class ChainSupportResponse(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+    
+    items = fields.List(fields.String(default=''), default=[], missing=[])
