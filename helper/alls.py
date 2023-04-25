@@ -111,6 +111,7 @@ class AllsItemHelper:
                     'nft_id': nft_id, # NOTE: this nft_id is index of nft in collection for mint
                     'price': get(_nft, 'price', 0),
                     'image': get(_nft, 'ImageUrl', '') if not _is_box else get(collection, 'box_image_url'),
+                    'animation_model_url': get(_nft, 'AnimationModelUrl', '') if not _is_box else get(collection, 'box_image_url'),
                     'rarity': get(_nft, 'AssetRarity'),
                     'total_supply': int(get(collection, 'total_supply', 0) if not _is_box else get(collection, 'total_supply') * get(_nft, 'rate') / 100),
                     'total_minted': _total_minted,
@@ -127,6 +128,7 @@ class AllsItemHelper:
                         'nft_id': _idx, # NOTE: this nft_id is index of nft in collection for mint
                         'price': get(_type, 'price', 0),
                         'image': get(_type, 'ImageUrl', ''),
+                        'animation_model_url': get(_type, 'AnimationModelUrl', ''),
                         'rarity': get(_type, 'AssetRarity'),
                         'total_supply': int(get(collection, 'total_supply', 0) * get(_type, 'rate') / 100),
                         'total_minted': _total_minted,

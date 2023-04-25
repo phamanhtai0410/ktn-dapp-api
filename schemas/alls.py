@@ -23,6 +23,7 @@ class Item(Schema):
     name = fields.String()
     price = fields.Float()
     image = fields.String()
+    animation_model_url = fields.String()
     rarity = fields.String()
     total_supply = fields.Int()
     address = fields.String()
