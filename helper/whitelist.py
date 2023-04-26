@@ -14,10 +14,8 @@ class WhitelistHelper:
 
     @staticmethod
     def checking(formdata):
-        _collection = py_.get(formdata, 'collection').lower()
         _address = py_.get(formdata, 'address').lower()
         _check = PreLaunchNftWhitelist.find_one(filter={
-            'collection': _collection,
             'address': _address
         })
         return {

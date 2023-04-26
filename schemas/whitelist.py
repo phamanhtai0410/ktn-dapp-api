@@ -11,6 +11,5 @@ class WhitelistCheckingBody(Schema):
     class Meta:
         unknown = EXCLUDE
         
-    collection = fields.String(required=True)
     address = fields.String(required=True)
 
