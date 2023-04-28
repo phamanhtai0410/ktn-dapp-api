@@ -16,7 +16,8 @@ from resources.referral_sign_message import ReferralSignMessageResource
 from resources.payment import Payment
 from resources.setting import SettingResource
 from resources.royalty import Royalty
-from resources.alls import AllsItemResource, OneItemResource, UpcomingResource, ChainsSupportResource
+from resources.alls import AllsItemResource, OneItemResource, UpcomingResource, ChainsSupportResource, \
+    EmailSubscribeResource
 from resources.admin_config import AdminConfigResource
 from resources.category import CategoryResource
 from resources.whitelist import WhitelistCheckingResource
@@ -41,5 +42,6 @@ api_resources = {
     '/category': CategoryResource,
     '/alls/upcoming': UpcomingResource,
     '/chain/support': ChainsSupportResource,
-    '/whitelist/check': WhitelistCheckingResource
+    '/whitelist/check': WhitelistCheckingResource,
+    '/email/subcribe': EmailSubscribeResource
 }

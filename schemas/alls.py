@@ -114,4 +114,14 @@ class ChainSupportResponse(Schema):
         unknown = EXCLUDE
         ordered = True
     
-    items = fields.List(fields.String(default=''), default=[], missing=[])
+    items = fields.List(fields.Dict(), default=[], missing=[])
+
+
+
+class EmailSubscribeRequestParams(Schema):
+    class Meta:
+        unknown = EXCLUDE
+        ordered = True
+        
+    email = fields.String()
+    

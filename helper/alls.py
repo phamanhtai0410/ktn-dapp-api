@@ -4,7 +4,7 @@
         -
         -
 """
-from models import CollectionNFTModel, CollectionBoxModel, NFTModel, NftWhitelistModel
+from models import CollectionNFTModel, CollectionBoxModel, NFTModel, NftWhitelistModel, EmailSubscribeModel
 from pydash import get
 import pydash as py_
 
@@ -235,3 +235,10 @@ class AllsItemHelper:
         return {}
     
     
+    @staticmethod
+    def check_email_subscirbe(_email):
+        return False
+    
+    # @staticmethod
+    # def update_email_subscirbe(_email):
+    #     EmailSubscribeModel.db.find_
