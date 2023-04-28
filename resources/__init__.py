@@ -43,5 +43,5 @@ api_resources = {
     '/alls/upcoming': UpcomingResource,
     '/chain/support': ChainsSupportResource,
     '/whitelist/check': WhitelistCheckingResource,
-    '/email/subcribe': EmailSubscribeResource
+    '/email/subscribe': EmailSubscribeResource
 }
