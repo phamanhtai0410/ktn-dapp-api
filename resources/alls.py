@@ -11,6 +11,7 @@ from connect import security
 from schemas.alls import AllsItemRequestParams, AllsItemResponse, OneItemRequestParams, \
     OneItemResponse, UpcomingRequestParams, UpcommingItemsResponse, ChainSupportResponse, \
     EmailSubscribeRequestParams
+from exception import InvalidEmail
 from helper.alls import AllsItemHelper
 from lib import CHAINS_NAME
 
@@ -52,24 +53,16 @@ class ChainsSupportResource(Resource):
         _chainsSupport = ChainSupportResponse()
         _res = _chainsSupport.load(data={"items": CHAINS_NAME})
         return _res
-    
 
 
 class EmailSubscribeResource(Resource):
-    
-    security.http(
-        # response=ReferralResponseSchema(),
-        params=EmailSubscribeRequestParams()
-    )
-    def get(self, params):
-        _address = py_.get(params, 'address')
-        return _address
-
     @security.http(
         form_data=EmailSubscribeRequestParams()
     )
     def post(self, form_data):
-        _email = py_.get(form_data, 'email')
-        
+        _email = py_.get(form_data, 'email').strip()
+        _is_email = AllsItemHelper.check_email_subscirbe(_email)
+        if _is_email is False:
+            raise InvalidEmail
+        AllsItemHelper.update_email_subscirbe(_email)
         return {}
-

@@ -4,11 +4,16 @@
         -
         -
 """
+import re
+
 from models import CollectionNFTModel, CollectionBoxModel, NFTModel, NftWhitelistModel, EmailSubscribeModel
 from pydash import get
 import pydash as py_
 
 from lib import dt_utcnow
+
+
+REGEX_EMAIL = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
 
 class AllsItemHelper:
     @staticmethod
@@ -237,8 +242,18 @@ class AllsItemHelper:
     
     @staticmethod
     def check_email_subscirbe(_email):
+        if re.fullmatch(REGEX_EMAIL, _email):
+            return True
         return False
     
-    # @staticmethod
-    # def update_email_subscirbe(_email):
-    #     EmailSubscribeModel.db.find_
+    @staticmethod
+    def update_email_subscirbe(_email):
+        find_one = EmailSubscribeModel.find_one({"email": _email})
+        if find_one:
+            return
+        EmailSubscribeModel.insert_one({
+            "email": _email,
+            "created_by": "user",
+            "created_time": dt_utcnow(),
+            "updated_time": dt_utcnow()
+        })
