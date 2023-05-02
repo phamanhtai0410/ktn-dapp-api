@@ -59,8 +59,8 @@ class AllsItemHelper:
         _items = []
         if not collection:
             return _items
-
-        if get(collection, 'address') and get(collection, 'types_list'):
+        
+        if get(collection, 'address') and (get(collection, 'types_list') or get(collection, 'is_existing_metadata', False)):
             _total_user_minted = 0
             _user_whitelist_amount = 0
             if user_address:
@@ -72,7 +72,7 @@ class AllsItemHelper:
                     user_address=user_address)
 
             _types_list = get(collection, 'types_list')
-            _is_box = get(collection, 'is_box')
+            _is_box = get(collection, 'is_box', False)
             _whitelist = AllsItemHelper.get_whitelist_time(collection=collection)
             _nft_info = {
                 'nft_id': 0, # NOTE: if collection mint like box only need index 0
@@ -99,7 +99,26 @@ class AllsItemHelper:
                     'total_supply': get(collection, 'total_supply', 0),
                     'total_minted': _total_minted,
                 })
+            elif get(collection, 'is_existing_metadata'):
+                _count_filter = {
+                    'contract': get(collection, 'address'),
+                    'nft_index': 0
+                }
+                
+                _total_minted = NFTModel.col.count_documents(_count_filter)
+                
+                _items = [
+                    {
+                        **_nft_info,
+                        'price': get(collection, 'price'),
+                        'image': get(collection, 'display_url'),
+                        'total_supply': get(collection, 'total_supply'),
+                        'total_minted': _total_minted
+                    }
+                ]
+                
             elif nft_id is not None:
+
                 _nft = get(_types_list, f'{nft_id}', None)
                 _count_filter = {
                     'contract': get(collection, 'address')
@@ -121,6 +140,7 @@ class AllsItemHelper:
                     'total_supply': int(get(collection, 'total_supply', 0) if not _is_box else get(collection, 'total_supply') * get(_nft, 'rate') / 100),
                     'total_minted': _total_minted,
                 }] if _nft else []
+                    
 
             else:
                 for (_idx, _type) in enumerate(_types_list):
@@ -178,6 +198,7 @@ class AllsItemHelper:
                 "$lt": _now
             }
         _collections = list(CollectionNFTModel.find(filter=_filter))
+        print("* DEBUG : ", _collections)
         _items = []
         if len(_collections):
             for _collection in _collections:
