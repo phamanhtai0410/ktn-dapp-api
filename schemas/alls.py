@@ -33,7 +33,6 @@ class Item(Schema):
     pay_token_address = fields.String(allow_none=True)
     pay_token_symbol = fields.String(allow_none=True)
     is_paid_by_native = fields.Boolean(default=False)
-    weth_address = fields.String(allow_none=True)
     gateway_address = fields.String(allow_none=True)
     total_minted = fields.Integer(default=0)
     whitelist = fields.Nested(WhitelistTimeSchema, default={}, missing={})

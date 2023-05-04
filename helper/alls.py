@@ -83,7 +83,6 @@ class AllsItemHelper:
                 'pay_token_address': get(collection, 'pay_token_address', ''),
                 'pay_token_symbol': get(collection, 'pay_token_symbol', 'USDT'),
                 'dapp_creator_address': get(collection, 'dapp_creator_address'),
-                'weth_address': get(collection, 'weth_address'),
                 'gateway_address': get(collection, 'gateway_address'),
                 'is_paid_by_native': get(collection, 'is_paid_by_native', False),
                 'whitelist': _whitelist,
