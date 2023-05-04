@@ -198,7 +198,8 @@ class AllsItemHelper:
                 "$lt": _now
             }
         _collections = list(CollectionNFTModel.find(filter=_filter))
-        print("* DEBUG : ", _collections)
+        _collections.sort(key=lambda x: get(x, 'created_time', dt_utcnow()), reverse=True)
+        # print("* DEBUG : ", _collections)
         _items = []
         if len(_collections):
             for _collection in _collections:
