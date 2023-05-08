@@ -5,7 +5,6 @@ variables:
   APP_NAME_QUEUE_WORKER: ktn-dapp-queue-worker
   APP_NAME_EXCHANGE_QUEUE_WORKER: ktn-dapp-exchange-queue
   APP_NAME_API_QUEUE_WORKER: ktn-dapp-api-queue-worker
-
   CONTAINER_REPO_ASIA_STAG: 968557029040.dkr.ecr.ap-southeast-1.amazonaws.com/stag/ktn-dapp-api
   CONTAINER_REPO_ASIA_PROD: harbor.atomsolution.vn/ktn/ktn-dapp-api
   NAMESPACE_STAG: ktn-api-stag
