@@ -109,11 +109,12 @@ class AllsItemHelper:
                 }
                 
                 _total_minted = NFTModel.col.count_documents(_count_filter)
+                _now = dt_utcnow()
                 
                 _items = [
                     {
                         **_nft_info,
-                        'price': get(collection, 'price'),
+                        'price': get(collection, 'whitelist_price') if get(collection, 'whitelist_price') and get(_whitelist, 'end_time') > _now.timestamp() else get(collection, 'price'),
                         'image': get(collection, 'display_url'),
                         'total_supply': get(collection, 'total_supply'),
                         'total_minted': _total_minted
