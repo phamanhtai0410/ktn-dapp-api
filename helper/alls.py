@@ -115,6 +115,7 @@ class AllsItemHelper:
                     {
                         **_nft_info,
                         'price': get(collection, 'price'),
+                        'whitelist_price': get(collection, 'whitelist_price'),
                         'image': get(collection, 'display_url'),
                         'total_supply': get(collection, 'total_supply'),
                         'total_minted': _total_minted

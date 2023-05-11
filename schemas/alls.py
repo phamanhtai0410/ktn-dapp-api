@@ -22,6 +22,7 @@ class Item(Schema):
     nft_id = fields.Integer()
     name = fields.String()
     price = fields.Float()
+    whitelist_price = fields.Float()
     image = fields.String()
     animation_model_url = fields.String()
     rarity = fields.String()
