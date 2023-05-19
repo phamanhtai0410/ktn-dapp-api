@@ -2,7 +2,7 @@ from pydash import get
 
 from constants import Constants
 from lib.exception import BadRequest
-from models import LeaderBoardModel, PointModel
+from models import LeaderBoardModel, PointModel, ReferralLogModel
 import pydash as py_
 
 
@@ -17,11 +17,22 @@ class LeaderBoardHelper:
         if event == 'top_referral':
 
             if search:
-                return {
-                    "items": [LeaderBoardModel.get_rank_of(
+                _total_ref_people = ReferralLogModel.col.count_documents(
+                    {
+                        'address_linked': search
+                    }
+                )
+                _rank = LeaderBoardModel.get_rank_of(
                         event=event,
                         address=search.lower()
-                    )],
+                    )
+                return {
+                    "items": [
+                        {
+                            **_rank,
+                            'total_referral_people': _total_ref_people
+                        }    
+                    ],
                     'num_of_page': 1,
                     'page_size': page_size,
                     'page': page
