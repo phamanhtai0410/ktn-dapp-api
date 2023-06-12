@@ -15,6 +15,12 @@ from resources.user import User, UserInfo
 from resources.referral_sign_message import ReferralSignMessageResource
 from resources.payment import Payment
 from resources.setting import SettingResource
+from resources.royalty import Royalty
+from resources.alls import AllsItemResource, OneItemResource, UpcomingResource, ChainsSupportResource, \
+    EmailSubscribeResource
+from resources.admin_config import AdminConfigResource
+from resources.category import CategoryResource
+from resources.whitelist import WhitelistCheckingResource
 
 api_resources = {
     '/hello': HelloWorld,
@@ -29,4 +35,13 @@ api_resources = {
     '/user_info': UserInfo, 
     '/payment': Payment,
     '/setting': SettingResource,
+    '/royalty_info': Royalty,
+    '/alls': AllsItemResource,
+    '/nft/detail': OneItemResource,
+    '/config': AdminConfigResource,
+    '/category': CategoryResource,
+    '/alls/upcoming': UpcomingResource,
+    '/chain/support': ChainsSupportResource,
+    '/whitelist/check': WhitelistCheckingResource,
+    '/email/subscribe': EmailSubscribeResource
 }

@@ -37,7 +37,7 @@ class User(Resource):
         _address = py_.get(form_data, 'address')
         _signature = py_.get(form_data, 'signature')
         _nonce = py_.get(form_data,'nonce')
-        res  = UserHelper.verify_signature(_address,_nonce ,_signature )
+        res  = UserHelper.verify_signature(_address,_nonce ,_signature)
         return res
 
 

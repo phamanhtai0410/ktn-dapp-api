@@ -53,3 +53,27 @@ class ELockAddress(Exception):
         self.error_code = 'E_LOCK_ADDRESS'
 
     pass
+
+
+class InvalidEmail(Exception):
+    def __init__(self, msg='Invalid Email.', *args: object,
+                 **kwargs) -> None:
+        super().__init__(*args)
+        self.status_code = 400
+        self.msg = msg
+        self.errors = []
+        self.error_code = 'E_INVALID_EMAIL'
+
+    pass
+
+
+class EmailExisted(Exception):
+    def __init__(self, msg='Email Existed.', *args: object,
+                 **kwargs) -> None:
+        super().__init__(*args)
+        self.status_code = 400
+        self.msg = msg
+        self.errors = []
+        self.error_code = 'E_EMAIL_EXISTED'
+
+    pass

@@ -4,7 +4,7 @@
         -
         -
 """
-from marshmallow import Schema, EXCLUDE, RAISE, fields
+from marshmallow import Schema, EXCLUDE, RAISE, fields, INCLUDE
 
 from constants import Constants
 
@@ -18,6 +18,7 @@ class LeaderBoardItem(Schema):
     event = fields.String()
     point = fields.Float(missing=0)
     rank = fields.Int()
+    total_referral_people = fields.Int(required=False) # Add to search one specificed address
 
 class LeaderBoardResponse(Schema):
     class Meta:
